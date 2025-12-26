@@ -1,0 +1,32 @@
+{
+  "name": "apartment-project-js",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^1.5.0",
+    "@vercel/speed-insights": "^1.2.0",
+    "cloudinary": "^2.8.0",
+    "dotenv": "^17.2.3",
+    "framer-motion": "^12.23.24",
+    "mongoose": "^8.20.0",
+    "next": "16.0.1",
+    "pdf-lib": "^1.17.1",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "react-icons": "^5.5.0",
+    "signature_pad": "^5.1.2"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "babel-plugin-react-compiler": "1.0.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.0.1",
+    "tailwindcss": "^4"
+  }
+}
