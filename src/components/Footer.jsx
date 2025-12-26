@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import {
   FaFacebook,
@@ -7,6 +7,12 @@ import {
   FaInstagram,
   FaLinkedin,
   FaHome,
+  FaPhone,
+  FaEnvelope,
+  FaMapMarkerAlt,
+  FaChevronDown,
+  FaChevronUp,
+  FaArrowRight,
 } from "react-icons/fa";
 
 const postalCodes = [
@@ -31,140 +37,203 @@ const postalCodes = [
 ];
 
 const Footer = () => {
-  const columns = 10;
-  const itemsPerColumn = Math.ceil(postalCodes.length / columns);
-  const postalColumns = Array.from({ length: columns }, (_, i) =>
-    postalCodes.slice(i * itemsPerColumn, (i + 1) * itemsPerColumn)
-  );
+  const [showAllCodes, setShowAllCodes] = useState(false);
+  const displayedCodes = showAllCodes ? postalCodes : postalCodes.slice(0, 40);
 
   return (
-    <footer className="bg-gray-50 py-12 border-t border-gray-200">
-      <div className="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row justify-between gap-10">
-        {/* Left: Logo */}
-        <div className="flex flex-col gap-2 text-black">
-          <div className="flex items-center gap-2">
-            <FaHome className="text-3xl text-black" />
-            <span className="font-bold text-2xl text-black">RivoRent Inc.</span>
+    <footer className="bg-gradient-to-b from-[#1a1a1a] to-[#0d0d0d] text-white">
+      {/* Main Footer Content */}
+      <div className="max-w-7xl mx-auto px-6 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
+          
+          {/* Column 1: Brand & About */}
+          <div className="lg:col-span-1">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-10 h-10 bg-[#658C58] rounded-lg flex items-center justify-center">
+                <FaHome className="text-white text-xl" />
+              </div>
+              <span className="font-bold text-2xl text-white">RivoRent</span>
+            </div>
+            <p className="text-gray-400 text-sm leading-relaxed mb-6">
+              Your trusted partner for finding the perfect rental property in Cleveland, Ohio. 
+              We make renting simple, transparent, and stress-free.
+            </p>
+            
+            {/* Social Icons */}
+            <div className="flex gap-3">
+              {[
+                { icon: FaFacebook, href: "https://www.facebook.com/share/19yyDn7Fpo/?mibextid=wwXIfr" },
+                { icon: FaTwitter, href: "https://x.com/rivorent?s=21" },
+                { icon: FaInstagram, href: "https://instagram.com" },
+                { icon: FaLinkedin, href: "http://linkedin.com/in/rivo-rent-a1136139a" },
+              ].map((social, i) => (
+                <a
+                  key={i}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-[#658C58] transition-all duration-300"
+                >
+                  <social.icon className="text-lg" />
+                </a>
+              ))}
+            </div>
           </div>
-          <p className="mt-2 text-sm text-black">
-            Your go-to platform for finding the best rental properties in
-            Cleveland, OH.
-          </p>
+
+          {/* Column 2: Quick Links */}
+          <div>
+            <h4 className="text-lg font-semibold mb-6 text-white relative">
+              Quick Links
+              <span className="absolute bottom-[-8px] left-0 w-10 h-1 bg-[#658C58] rounded-full"></span>
+            </h4>
+            <ul className="space-y-3">
+              {[
+                { name: "Home", href: "/" },
+                { name: "Browse Properties", href: "/search" },
+                { name: "Apply Now", href: "/apply" },
+                { name: "About Us", href: "/about" },
+                { name: "Contact", href: "/contact" },
+                { name: "Privacy Policy", href: "/privacy-policy" },
+              ].map((link, i) => (
+                <li key={i}>
+                  <Link
+                    href={link.href}
+                    className="text-gray-400 hover:text-[#658C58] transition-colors duration-300 flex items-center gap-2 group text-sm"
+                  >
+                    <FaArrowRight className="text-xs opacity-0 group-hover:opacity-100 transition-opacity" />
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Column 3: Contact Info */}
+          <div>
+            <h4 className="text-lg font-semibold mb-6 text-white relative">
+              Contact Us
+              <span className="absolute bottom-[-8px] left-0 w-10 h-1 bg-[#658C58] rounded-full"></span>
+            </h4>
+            <ul className="space-y-4">
+              <li className="flex items-start gap-3">
+                <div className="w-8 h-8 bg-[#658C58]/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <FaMapMarkerAlt className="text-[#658C58] text-sm" />
+                </div>
+                <div>
+                  <p className="text-gray-400 text-sm">Cleveland, Ohio</p>
+                  <p className="text-gray-500 text-xs">United States</p>
+                </div>
+              </li>
+              <li className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-[#658C58]/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <FaPhone className="text-[#658C58] text-sm" />
+                </div>
+                <a href="tel:+18455769038" className="text-gray-400 text-sm hover:text-[#658C58] transition-colors">
+                  (845) 576-9038
+                </a>
+              </li>
+              <li className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-[#658C58]/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <FaEnvelope className="text-[#658C58] text-sm" />
+                </div>
+                <a href="mailto:Support@Rivo.rent" className="text-gray-400 text-sm hover:text-[#658C58] transition-colors">
+                  info@rivorent.com
+                </a>
+              </li>
+            </ul>
+
+            {/* Business Hours */}
+            <div className="mt-6 p-4 bg-white/5 rounded-xl">
+              <p className="text-sm font-medium text-white mb-2">Business Hours</p>
+              <p className="text-gray-400 text-xs">Mon - Fri: 9:00 AM - 6:00 PM</p>
+              <p className="text-gray-400 text-xs">Sat: 10:00 AM - 4:00 PM</p>
+              <p className="text-gray-400 text-xs">Sun: Closed</p>
+            </div>
+          </div>
+
+          {/* Column 4: Newsletter */}
+          <div>
+            <h4 className="text-lg font-semibold mb-6 text-white relative">
+              Stay Updated
+              <span className="absolute bottom-[-8px] left-0 w-10 h-1 bg-[#658C58] rounded-full"></span>
+            </h4>
+            <p className="text-gray-400 text-sm mb-4">
+              Subscribe to get the latest properties and exclusive deals.
+            </p>
+            <div className="flex flex-col gap-3">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="w-full px-4 py-3 bg-white/10 rounded-xl text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-[#658C58]/50 border border-white/10"
+              />
+              <button className="w-full bg-[#658C58] text-white py-3 rounded-xl font-medium text-sm hover:bg-[#507144] transition-colors">
+                Subscribe
+              </button>
+            </div>
+
+            {/* Trust Badges */}
+            <div className="mt-6 flex gap-2">
+              <div className="px-3 py-1.5 bg-white/5 rounded-lg">
+                <p className="text-[10px] text-gray-500">Licensed</p>
+                <p className="text-xs text-white font-medium">Real Estate</p>
+              </div>
+              <div className="px-3 py-1.5 bg-white/5 rounded-lg">
+                <p className="text-[10px] text-gray-500">Verified</p>
+                <p className="text-xs text-white font-medium">Properties</p>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Middle: Routes + Postal Codes */}
-        <div className="flex flex-col md:flex-row gap-12 w-full">
-          {/* Quick Links */}
-          <div className="flex flex-col gap-2 text-black">
-            <h4 className="font-semibold mb-2 text-black">Quick Links</h4>
-            <Link
-              href="/"
-              className="hover:text-[#658C58] transition text-black"
+        {/* Service Areas - Postal Codes */}
+        <div className="mt-12 pt-10 border-t border-white/10">
+          <div className="flex items-center justify-between mb-6">
+            <h4 className="text-lg font-semibold text-white">
+              Service Areas <span className="text-gray-500 text-sm font-normal ml-2">({postalCodes.length} ZIP Codes)</span>
+            </h4>
+            <button
+              onClick={() => setShowAllCodes(!showAllCodes)}
+              className="flex items-center gap-2 text-[#658C58] text-sm hover:underline"
             >
-              Home
-            </Link>
-            <Link
-              href="/about"
-              className="hover:text-[#658C58] transition text-black"
-            >
-              About
-            </Link>
-            <Link
-              href="/contact"
-              className="hover:text-[#658C58] transition text-black"
-            >
-              Contact
-            </Link>
-            <Link
-              href="/privacy-policy"
-              className="hover:text-[#658C58] transition text-black"
-            >
-              Privacy Policy
-            </Link>
+              {showAllCodes ? "Show Less" : "View All"}
+              {showAllCodes ? <FaChevronUp /> : <FaChevronDown />}
+            </button>
           </div>
-
-          {/* Postal Codes - Desktop (unchanged) */}
-          <div className="hidden md:flex gap-6 w-full">
-            {postalColumns.map((col, idx) => (
-              <div key={idx} className="flex flex-col gap-1 text-sm text-black">
-                <h4 className="font-semibold mb-2 text-black">Postal Codes</h4>
-                {col.map((code) => (
-                  <Link
-                    key={code}
-                    href={`/search?postalCode=${code}`}
-                    className="hover:text-[#658C58] transition text-black"
-                  >
-                    {code}
-                  </Link>
-                ))}
-              </div>
+          
+          <div className="flex flex-wrap gap-2">
+            {displayedCodes.map((code) => (
+              <Link
+                key={code}
+                href={`/search?postalCode=${code}`}
+                className="px-3 py-1.5 bg-white/5 rounded-lg text-gray-400 text-xs hover:bg-[#658C58] hover:text-white transition-all duration-300"
+              >
+                {code}
+              </Link>
             ))}
-          </div>
-
-          {/* Postal Codes - Mobile Only (3 columns) */}
-          <div className="md:hidden grid grid-cols-3 gap-4 w-full">
-            {Array.from({ length: 3 }, (_, i) =>
-              postalCodes.slice(i * 50, (i + 1) * 50)
-            ).map((col, idx) => (
-              <div key={idx} className="flex flex-col gap-1 text-sm text-black">
-                <h4 className="font-semibold mb-2 text-black">Postal Codes</h4>
-                {col.map((code) => (
-                  <Link
-                    key={code}
-                    href={`/search?postalCode=${code}`}
-                    className="hover:text-[#658C58] transition text-black"
-                  >
-                    {code}
-                  </Link>
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Right: Social Icons */}
-        <div className="flex flex-col gap-4 text-black">
-          <h4 className="font-semibold mb-2 text-black">Follow Us</h4>
-          <div className="flex gap-4 text-xl">
-            <a
-              href="https://www.facebook.com/share/19yyDn7Fpo/?mibextid=wwXIfr"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-[#658C58] transition text-black"
-            >
-              <FaFacebook />
-            </a>
-            <a
-              href="https://x.com/rivorent?s=21"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-[#658C58] transition text-black"
-            >
-              <FaTwitter />
-            </a>
-            <a
-              href="https://instagram.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-[#658C58] transition text-black"
-            >
-              <FaInstagram />
-            </a>
-            <a
-              href="http://linkedin.com/in/rivo-rent-a1136139a"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-[#658C58] transition text-black"
-            >
-              <FaLinkedin />
-            </a>
           </div>
         </div>
       </div>
 
-      {/* Bottom Text */}
-      <div className="text-center mt-12 text-sm text-black">
-        © {new Date().getFullYear()} Rivo Rents. All Rights Reserved.
+      {/* Bottom Bar */}
+      <div className="border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-6 py-6">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-gray-500 text-sm text-center md:text-left">
+              © {new Date().getFullYear()} RivoRent Inc. All Rights Reserved.
+            </p>
+            <div className="flex gap-6 text-sm">
+              <Link href="/privacy-policy" className="text-gray-500 hover:text-[#658C58] transition-colors">
+                Privacy Policy
+              </Link>
+              <Link href="/terms" className="text-gray-500 hover:text-[#658C58] transition-colors">
+                Terms of Service
+              </Link>
+              <Link href="/sitemap" className="text-gray-500 hover:text-[#658C58] transition-colors">
+                Sitemap
+              </Link>
+            </div>
+          </div>
+        </div>
       </div>
     </footer>
   );

@@ -5,12 +5,11 @@ export async function GET(req) {
   try {
     await dbConnect();
 
-    // Provide a base URL so new URL works correctly
-    const { searchParams } = new URL(
-      req.url,
-      `http://${req.headers.get("host")}`
-    );
+    const { searchParams } = new URL(req.url, `http://${req.headers.get("host")}`);
     const postalCode = searchParams.get("postalCode");
+    const page = parseInt(searchParams.get("page")) || 1;
+    const limit = parseInt(searchParams.get("limit")) || 50;
+    const skip = (page - 1) * limit;
 
     if (!postalCode) {
       return new Response(
@@ -19,12 +18,46 @@ export async function GET(req) {
       );
     }
 
-    // If postal codes are strings in DB, remove Number()
-    const properties = await Property.find({
-      "location.postalCode": postalCode,
-    }).sort({ createdAt: -1 });
+    // Build search query - search in multiple fields
+    const searchQuery = {
+      $or: [
+        { "location.postalCode": postalCode },
+        { "location.postalCode": parseInt(postalCode) || 0 },
+        { "location.fullAddress": { $regex: postalCode, $options: "i" } },
+        { propertyName: { $regex: postalCode, $options: "i" } },
+      ],
+    };
 
-    return new Response(JSON.stringify(properties), { status: 200 });
+    // Get total count
+    const total = await Property.countDocuments(searchQuery);
+
+    // Fetch properties with pagination
+    const properties = await Property.find(searchQuery)
+      .select("propertyName photos location address rentMin rentMax beds baths sqft")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    return new Response(
+      JSON.stringify({
+        properties,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+          hasMore: skip + properties.length < total,
+        },
+      }),
+      {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
+        },
+      }
+    );
   } catch (err) {
     console.error("Search API Error:", err);
     return new Response(

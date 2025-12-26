@@ -36,7 +36,7 @@ const FloatingActionButton = () => {
       ),
       onClick: () => {
         window.location.href =
-          "mailto:support@rivorent.com?subject=Inquiry from Rivo Rent Website&body=Hello, I would like to get more information about your properties.";
+          "mailto:Support@Rivo.rentsubject=Inquiry from Rivo Rent Website&body=Hello, I would like to get more information about your properties.";
       },
     },
     {
@@ -71,7 +71,7 @@ const FloatingActionButton = () => {
           />
         </svg>
       ),
-      onClick: () => (window.location.href = "tel:+845-576-9038"),
+      onClick: () => (window.location.href = "tel:+18455769038"),
     },
   ];
 
