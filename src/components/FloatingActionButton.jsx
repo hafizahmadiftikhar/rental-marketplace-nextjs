@@ -36,7 +36,7 @@ const FloatingActionButton = () => {
       ),
       onClick: () => {
         window.location.href =
-          "mailto:Support@Rivo.rentsubject=Inquiry from Rivo Rent Website&body=Hello, I would like to get more information about your properties.";
+          "mailto:Support@Rivo.Rent";
       },
     },
     {

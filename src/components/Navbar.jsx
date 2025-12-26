@@ -53,7 +53,7 @@ export default function Navbar() {
             </p>
             <div className="flex items-center gap-4">
               <a
-                href="tel:+8455769038"
+                href="tel:+18455769038"
                 className="flex items-center gap-2 hover:text-[#a5d6a7] transition-colors"
               >
                 <FaPhone className="text-xs" />

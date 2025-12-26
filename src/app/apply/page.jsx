@@ -234,9 +234,9 @@ export default function RentalApplicationForm() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               {[
                 { step: "1", title: "Complete Form", desc: "Fill all required fields" },
-                { step: "2", title: "Upload Documents", desc: "$60 fee payment proof" },
+                { step: "2", title: "Upload Documents", desc: "ID & photo of check" },
                 { step: "3", title: "Sign & Submit", desc: "Electronic signature" },
-                { step: "4", title: "Get Approved", desc: "24-48 hours review" },
+                { step: "4", title: "Get Approved", desc: "24-48 hour review" },
               ].map((item, i) => (
                 <div key={i} className="flex items-start gap-3">
                   <div className="w-8 h-8 bg-[#658C58] text-white rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">
@@ -251,7 +251,7 @@ export default function RentalApplicationForm() {
             </div>
             <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
               <p className="text-amber-800 text-sm">
-                <span className="font-bold">⚠️ Important:</span> The $60 application fee is non-refundable. Upload money order or certified check images.
+                <span className="font-bold">⚠️ Important:</span> The $60 application fee is non-refundable. Please upload a photo of your money order or certified check.
               </p>
             </div>
           </div>
@@ -475,7 +475,13 @@ export default function RentalApplicationForm() {
           {/* Contact Footer */}
           <div className="text-center py-6">
             <p className="text-gray-500 text-sm">
-              Need help? Contact us at <span className="font-bold text-[#658C58]">(845) 576-9038</span>
+              Need help? Contact us at{" "}
+              <a
+                href="tel:+18455769038"
+                className="font-bold text-[#658C58]"
+              >
+                (845) 576-9038
+              </a>
             </p>
           </div>
         </form>
@@ -670,7 +676,7 @@ function ApplicantForm({
       {/* Document Upload */}
       <div>
         <SectionTitle icon={<FaFileSignature />} title="Upload Documents" />
-        <p className="text-gray-500 text-sm mb-4">Upload ID, proof of income, and payment proof (money order/check images)</p>
+        <p className="text-gray-500 text-sm mb-4">Upload ID, proof of income, and photo of check or money order for the $60 application fee</p>
         <UploadField
           onUpload={(fileObj) => setApplicantField(applicant, "documents", [...ap.documents, fileObj])}
         />

@@ -68,26 +68,27 @@ export default function PropertyDetails() {
   }, [property]);
 
   const averageRating = getAverageRating(randomReviews);
-// Copy link function
-const handleShare = async () => {
-  const url = window.location.href;
-  
-  try {
-    await navigator.clipboard.writeText(url);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000); // 2 sec baad reset
-  } catch (err) {
-    // Fallback for older browsers
-    const textArea = document.createElement('textarea');
-    textArea.value = url;
-    document.body.appendChild(textArea);
-    textArea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textArea);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }
-};
+
+  // Copy link function
+  const handleShare = async () => {
+    const url = window.location.href;
+    
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      const textArea = document.createElement('textarea');
+      textArea.value = url;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
   // Loading State
   if (loading)
     return (
@@ -243,18 +244,18 @@ const handleShare = async () => {
                   <button className="p-2 hover:bg-gray-100 rounded-full transition">
                     <FaHeart size={18} />
                   </button>
-              <button 
-  onClick={handleShare}
-  className="p-2 hover:bg-gray-100 rounded-full transition relative"
-  title="Copy link"
->
-  <FaShareAlt size={18} />
-  {copied && (
-    <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded whitespace-nowrap">
-      Link Copied!
-    </span>
-  )}
-</button>
+                  <button 
+                    onClick={handleShare}
+                    className="p-2 hover:bg-gray-100 rounded-full transition relative"
+                    title="Copy link"
+                  >
+                    <FaShareAlt size={18} />
+                    {copied && (
+                      <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                        Link Copied!
+                      </span>
+                    )}
+                  </button>
                 </div>
               </div>
               <p className="text-gray-600 text-sm md:text-base mb-3">
@@ -298,12 +299,20 @@ const handleShare = async () => {
               </p>
             </div>
 
-            {/* Special Offer */}
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 md:p-5">
-              <h2 className="text-base md:text-lg font-bold text-blue-700 mb-1">🎉 Special Offer!</h2>
-              <p className="text-gray-700 text-sm md:text-base">
-                Get <span className="font-bold text-blue-600">1 month FREE</span> when you sign a 12 month lease!
-              </p>
+            {/* Leasing Incentive - Professional Version */}
+            <div className="bg-white border border-gray-200 rounded-xl p-4 md:p-5 shadow-sm">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 bg-[#658C58]/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <span className="text-[#658C58] text-lg">📋</span>
+                </div>
+                <div>
+                  <h2 className="text-base md:text-lg font-semibold text-gray-800 mb-1">Limited-Time Leasing Incentive</h2>
+                  <p className="text-gray-600 text-sm md:text-base">
+                    Receive one month free rent with a 12-month lease on select units.
+                  </p>
+                  <p className="text-gray-400 text-xs mt-1">Terms and conditions apply.</p>
+                </div>
+              </div>
             </div>
 
             {/* Neighborhood */}
@@ -415,28 +424,32 @@ const handleShare = async () => {
             <FAQSection />
 
             {/* Contact Info */}
-        {/* Contact Info */}
-<div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-sm">
-  <h2 className="text-lg md:text-xl font-bold text-gray-800 mb-4">📞 Contact Info</h2>
-  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-    <div className="flex items-center gap-2 bg-gray-100 p-3 rounded-lg">
-      <FaPhoneAlt className="text-[#658C58]" size={16} />
-      <span className="text-sm font-medium text-gray-800">(845) 576-9038</span>
-    </div>
-    <div className="flex items-center gap-2 bg-gray-100 p-3 rounded-lg">
-      <FaGlobe className="text-[#658C58]" size={16} />
-      <span className="text-sm font-medium text-gray-800">RevoRent.com</span>
-    </div>
-    <div className="flex items-center gap-2 bg-gray-100 p-3 rounded-lg">
-      <FaLanguage className="text-[#658C58]" size={16} />
-      <span className="text-sm font-medium text-gray-800">English</span>
-    </div>
-    <div className="flex items-center gap-2 bg-gray-100 p-3 rounded-lg">
-      <FaClock className="text-[#658C58]" size={16} />
-      <span className="text-sm font-medium text-gray-800">8am - 10pm</span>
-    </div>
-  </div>
-</div>
+            <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-sm">
+              <h2 className="text-lg md:text-xl font-bold text-gray-800 mb-4">📞 Contact Info</h2>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="flex items-center gap-2 bg-gray-100 p-3 rounded-lg">
+                  <FaPhoneAlt className="text-[#658C58]" size={16} />
+                  <a 
+                    href="tel:+18455769038"
+                    className="text-sm font-medium text-gray-800"
+                  >
+                    (845) 576-9038
+                  </a>
+                </div>
+                <div className="flex items-center gap-2 bg-gray-100 p-3 rounded-lg">
+                  <FaGlobe className="text-[#658C58]" size={16} />
+                  <span className="text-sm font-medium text-gray-800">RivoRent.com</span>
+                </div>
+                <div className="flex items-center gap-2 bg-gray-100 p-3 rounded-lg">
+                  <FaLanguage className="text-[#658C58]" size={16} />
+                  <span className="text-sm font-medium text-gray-800">English</span>
+                </div>
+                <div className="flex items-center gap-2 bg-gray-100 p-3 rounded-lg">
+                  <FaClock className="text-[#658C58]" size={16} />
+                  <span className="text-sm font-medium text-gray-800">8am - 10pm</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* ========== RIGHT SIDEBAR ========== */}

@@ -63,8 +63,8 @@ const Footer = () => {
             <div className="flex gap-3">
               {[
                 { icon: FaFacebook, href: "https://www.facebook.com/share/19yyDn7Fpo/?mibextid=wwXIfr" },
-                { icon: FaTwitter, href: "https://x.com/rivorent?s=21" },
-                { icon: FaInstagram, href: "https://instagram.com" },
+                { icon: FaTwitter, href: "https://x.com/RivoRent" },
+                { icon: FaInstagram, href: "http://instagram.com/_rivorent" },
                 { icon: FaLinkedin, href: "http://linkedin.com/in/rivo-rent-a1136139a" },
               ].map((social, i) => (
                 <a
@@ -136,8 +136,8 @@ const Footer = () => {
                 <div className="w-8 h-8 bg-[#658C58]/20 rounded-lg flex items-center justify-center flex-shrink-0">
                   <FaEnvelope className="text-[#658C58] text-sm" />
                 </div>
-                <a href="mailto:Support@Rivo.rent" className="text-gray-400 text-sm hover:text-[#658C58] transition-colors">
-                  info@rivorent.com
+                <a href="mailto:Support@Rivo.Rent" className="text-gray-400 text-sm hover:text-[#658C58] transition-colors">
+                  Support@Rivo.Rent
                 </a>
               </li>
             </ul>
@@ -145,9 +145,9 @@ const Footer = () => {
             {/* Business Hours */}
             <div className="mt-6 p-4 bg-white/5 rounded-xl">
               <p className="text-sm font-medium text-white mb-2">Business Hours</p>
-              <p className="text-gray-400 text-xs">Mon - Fri: 9:00 AM - 6:00 PM</p>
+              <p className="text-gray-400 text-xs">Fri: 8:00 AM - 10:00 PM</p>
               <p className="text-gray-400 text-xs">Sat: 10:00 AM - 4:00 PM</p>
-              <p className="text-gray-400 text-xs">Sun: Closed</p>
+              {/* <p className="text-gray-400 text-xs">Sun: 10:00 AM - 4:00 PM</p> */}
             </div>
           </div>
 

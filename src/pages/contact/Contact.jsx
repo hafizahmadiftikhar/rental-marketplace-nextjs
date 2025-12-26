@@ -52,16 +52,16 @@ export default function Contact() {
       icon: FaPhone,
       title: "Phone",
       value: "(845) 576-9038",
-      subtitle: "Mon-Fri, 9AM-6PM EST",
-      href: "tel:+8455769038",
+      href: "tel:+18455769038",
+      subtitle: "We call this number (845) 576-9038",
       color: "from-blue-500 to-blue-600",
     },
     {
       icon: FaEnvelope,
       title: "Email",
-      value: "support@rivorent.com",
+      value: "Support@Rivo.Rent",
       subtitle: "We reply within 24 hours",
-      href: "mailto:support@rivorent.com",
+      href: "mailto:Support@Rivo.Rent",
       color: "from-green-500 to-green-600",
     },
     {
@@ -75,8 +75,8 @@ export default function Contact() {
     {
       icon: FaClock,
       title: "Business Hours",
-      value: "Mon - Fri: 9AM - 6PM",
-      subtitle: "Sat: 10AM - 4PM",
+      value: "Mon - Fri: 8:00 AM - 10:00 PM",
+      subtitle: "Sat: 10:00 AM - 4:00 PM ",
       href: null,
       color: "from-orange-500 to-orange-600",
     },
@@ -365,10 +365,10 @@ export default function Contact() {
                 </p>
                 <div className="flex gap-3">
                   {[
-                    { icon: FaFacebookF, href: "#" },
-                    { icon: FaTwitter, href: "#" },
-                    { icon: FaInstagram, href: "#" },
-                    { icon: FaLinkedinIn, href: "#" },
+                    { icon: FaFacebookF, href: "https://www.facebook.com/share/18DksJ81js/" },
+                    { icon: FaTwitter, href: "https://x.com/RivoRent" },
+                    { icon: FaInstagram, href: "http://instagram.com/_rivorent" },
+                    { icon: FaLinkedinIn, href: "https://www.linkedin.com/in/rivo-rent-a1136139a" },
                   ].map((social, i) => (
                     <a
                       key={i}
