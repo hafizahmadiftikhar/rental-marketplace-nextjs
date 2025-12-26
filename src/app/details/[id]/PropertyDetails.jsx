@@ -40,22 +40,27 @@ export default function PropertyDetails() {
   });
   const [randomReviews, setRandomReviews] = useState([]);
 
-  useEffect(() => {
-    async function loadData() {
-      try {
-        const res = await fetch(`/api/getProperties`);
-        const data = await res.json();
-        const propertyFound = data.find((p) => String(p._id) === String(id));
-        setProperty(propertyFound || null);
-      } catch (e) {
-        console.error("Error fetching property:", e);
+useEffect(() => {
+  async function loadData() {
+    try {
+      const res = await fetch(`/api/getProperty/${id}`);
+      
+      if (!res.ok) {
         setProperty(null);
-      } finally {
-        setLoading(false);
+        return;
       }
+      
+      const data = await res.json();
+      setProperty(data);
+    } catch (e) {
+      console.error("Error fetching property:", e);
+      setProperty(null);
+    } finally {
+      setLoading(false);
     }
-    loadData();
-  }, [id]);
+  }
+  loadData();
+}, [id]);
   useEffect(() => {
     if (property) {
       setRandomAmenities(getRandomAmenities());
