@@ -18,7 +18,8 @@ import {
   FaCalendar,
   FaUserTie,
   FaPlus,
-  FaTrash
+  FaTrash,
+  FaExclamationCircle
 } from "react-icons/fa";
 
 export default function RentalApplicationForm() {
@@ -37,6 +38,7 @@ export default function RentalApplicationForm() {
 
   const [submitting, setSubmitting] = useState(false);
   const [activeSection, setActiveSection] = useState(0);
+  const [errors, setErrors] = useState({});
 
   function emptyApplicant() {
     return {
@@ -90,6 +92,14 @@ export default function RentalApplicationForm() {
       ...prev,
       [applicant]: { ...prev[applicant], [field]: value },
     }));
+    // Clear error when field is updated
+    if (errors[`${applicant}.${field}`]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[`${applicant}.${field}`];
+        return newErrors;
+      });
+    }
   }
 
   function setApplicantNested(applicant, section, field, value) {
@@ -171,8 +181,80 @@ export default function RentalApplicationForm() {
     setForm((prev) => ({ ...prev, vehicles: updated }));
   }
 
+  // Validate critical fields
+  function validateForm() {
+    const newErrors = {};
+
+    // Applicant 1 - Critical Fields (NON-SKIPPABLE)
+    if (!form.applicant1.name.trim()) {
+      newErrors["applicant1.name"] = "Full Name is required";
+    }
+    if (!form.applicant1.ssn.trim()) {
+      newErrors["applicant1.ssn"] = "Social Security Number is required";
+    }
+    if (!form.applicant1.dlNumber.trim()) {
+      newErrors["applicant1.dlNumber"] = "Driver's License Number is required";
+    }
+    if (!form.applicant1.dateOfBirth) {
+      newErrors["applicant1.dateOfBirth"] = "Date of Birth is required";
+    }
+    if (!form.applicant1.phoneHome.trim()) {
+      newErrors["applicant1.phoneHome"] = "Home Phone is required";
+    }
+    
+    // Documents validation - Min 2, Max 20
+    if (form.applicant1.documents.length < 2) {
+      newErrors["applicant1.documents"] = "Please upload at least 2 documents (ID, proof of income, etc.)";
+    }
+    if (form.applicant1.documents.length > 20) {
+      newErrors["applicant1.documents"] = "Maximum 20 documents allowed";
+    }
+
+    // Applicant 2 - If included (same critical fields)
+    if (form.includeApplicant2) {
+      if (!form.applicant2.name.trim()) {
+        newErrors["applicant2.name"] = "Full Name is required";
+      }
+      if (!form.applicant2.ssn.trim()) {
+        newErrors["applicant2.ssn"] = "Social Security Number is required";
+      }
+      if (!form.applicant2.dlNumber.trim()) {
+        newErrors["applicant2.dlNumber"] = "Driver's License Number is required";
+      }
+      if (!form.applicant2.dateOfBirth) {
+        newErrors["applicant2.dateOfBirth"] = "Date of Birth is required";
+      }
+      if (!form.applicant2.phoneHome.trim()) {
+        newErrors["applicant2.phoneHome"] = "Home Phone is required";
+      }
+      
+      // Documents validation for Applicant 2
+      if (form.applicant2.documents.length < 2) {
+        newErrors["applicant2.documents"] = "Please upload at least 2 documents (ID, proof of income, etc.)";
+      }
+      if (form.applicant2.documents.length > 20) {
+        newErrors["applicant2.documents"] = "Maximum 20 documents allowed";
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
+    
+    // Validate before submit
+    if (!validateForm()) {
+      // Scroll to first error
+      const firstErrorField = document.querySelector('.error-field');
+      if (firstErrorField) {
+        firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      alert("Please fill in all required fields and upload at least 2 documents.");
+      return;
+    }
+
     setSubmitting(true);
     try {
       const payload = {
@@ -234,7 +316,7 @@ export default function RentalApplicationForm() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               {[
                 { step: "1", title: "Complete Form", desc: "Fill all required fields" },
-                { step: "2", title: "Upload Documents", desc: "ID & photo of check" },
+                { step: "2", title: "Upload Documents", desc: "Min 2 / Max 20 files" },
                 { step: "3", title: "Sign & Submit", desc: "Electronic signature" },
                 { step: "4", title: "Get Approved", desc: "24-48 hour review" },
               ].map((item, i) => (
@@ -267,10 +349,12 @@ export default function RentalApplicationForm() {
             icon={<FaUser />} 
             title="Primary Applicant" 
             subtitle="Personal information for the main applicant"
+            showHelp={true}
           >
             <ApplicantForm
               applicant="applicant1"
               form={form}
+              errors={errors}
               setApplicantField={setApplicantField}
               setApplicantNested={setApplicantNested}
               addReference={addReference}
@@ -290,7 +374,7 @@ export default function RentalApplicationForm() {
               />
               <div>
                 <span className="font-semibold text-gray-800">Add Second Applicant</span>
-                <p className="text-gray-500 text-sm">Check this box if there's a co-applicant</p>
+                <p className="text-gray-500 text-sm">Check this box if there is a co-applicant</p>
               </div>
             </label>
           </div>
@@ -305,6 +389,7 @@ export default function RentalApplicationForm() {
               <ApplicantForm
                 applicant="applicant2"
                 form={form}
+                errors={errors}
                 setApplicantField={setApplicantField}
                 setApplicantNested={setApplicantNested}
                 addReference={addReference}
@@ -440,7 +525,7 @@ export default function RentalApplicationForm() {
 
             <div className="mb-6">
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Type Your Full Legal Name as Electronic Signature *
+                Type Your Full Legal Name as Electronic Signature <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -492,18 +577,32 @@ export default function RentalApplicationForm() {
 
 /* ================= REUSABLE COMPONENTS ================= */
 
-function FormCard({ icon, title, subtitle, children }) {
+function FormCard({ icon, title, subtitle, showHelp, children }) {
   return (
     <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
       <div className="bg-gradient-to-r from-gray-50 to-white px-6 py-4 border-b border-gray-100">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#658C58] text-white rounded-xl flex items-center justify-center">
-            {icon}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-[#658C58] text-white rounded-xl flex items-center justify-center">
+              {icon}
+            </div>
+            <div>
+              <h2 className="font-bold text-gray-800">{title}</h2>
+              <p className="text-gray-500 text-sm">{subtitle}</p>
+            </div>
           </div>
-          <div>
-            <h2 className="font-bold text-gray-800">{title}</h2>
-            <p className="text-gray-500 text-sm">{subtitle}</p>
-          </div>
+          {showHelp && (
+            <a 
+              href="tel:+18455769038" 
+              className="flex items-center gap-2 px-4 py-2 bg-[#658C58]/10 hover:bg-[#658C58]/20 rounded-lg transition-colors"
+            >
+              <FaPhone className="text-[#658C58] text-sm" />
+              <span className="text-sm">
+                <span className="text-gray-600">Need Help?</span>{" "}
+                <span className="font-semibold text-[#658C58]">(845) 576-9038</span>
+              </span>
+            </a>
+          )}
         </div>
       </div>
       <div className="p-6">{children}</div>
@@ -511,16 +610,24 @@ function FormCard({ icon, title, subtitle, children }) {
   );
 }
 
-function InputField({ label, required, ...props }) {
+function InputField({ label, required, error, ...props }) {
   return (
-    <div>
+    <div className={error ? "error-field" : ""}>
       <label className="block text-sm font-medium text-gray-700 mb-1">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       <input
-        className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#658C58]/20 focus:border-[#658C58] bg-white text-gray-800 text-sm transition-all"
+        className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#658C58]/20 focus:border-[#658C58] bg-white text-gray-800 text-sm transition-all ${
+          error ? "border-red-500 bg-red-50" : "border-gray-200"
+        }`}
+        required={required}
         {...props}
       />
+      {error && (
+        <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+          <FaExclamationCircle size={12} /> {error}
+        </p>
+      )}
     </div>
   );
 }
@@ -563,6 +670,7 @@ function SectionTitle({ icon, title }) {
 function ApplicantForm({
   applicant,
   form,
+  errors,
   setApplicantField,
   setApplicantNested,
   addReference,
@@ -570,6 +678,15 @@ function ApplicantForm({
   updateReference,
 }) {
   const ap = form[applicant];
+  
+  // Check if max documents reached
+  const maxDocsReached = ap.documents.length >= 20;
+
+  // Remove document
+  const removeDocument = (index) => {
+    const updatedDocs = ap.documents.filter((_, i) => i !== index);
+    setApplicantField(applicant, "documents", updatedDocs);
+  };
 
   return (
     <div className="space-y-8">
@@ -577,14 +694,61 @@ function ApplicantForm({
       <div>
         <SectionTitle icon={<FaIdCard />} title="Personal Information" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <InputField label="Full Name" required placeholder="John Doe" value={ap.name} onChange={(e) => setApplicantField(applicant, "name", e.target.value)} />
-          <InputField label="Social Security Number" required placeholder="XXX-XX-XXXX" value={ap.ssn} onChange={(e) => setApplicantField(applicant, "ssn", e.target.value)} />
-          <InputField label="Driver's License Number" placeholder="DL123456" value={ap.dlNumber} onChange={(e) => setApplicantField(applicant, "dlNumber", e.target.value)} />
-          <InputField label="Date of Birth" required type="date" value={ap.dateOfBirth} onChange={(e) => setApplicantField(applicant, "dateOfBirth", e.target.value)} />
-          <InputField label="Home Phone" required placeholder="(555) 123-4567" value={ap.phoneHome} onChange={(e) => setApplicantField(applicant, "phoneHome", e.target.value)} />
-          <InputField label="Work Phone" placeholder="(555) 987-6543" value={ap.phoneWork} onChange={(e) => setApplicantField(applicant, "phoneWork", e.target.value)} />
+          <InputField 
+            label="Full Name" 
+            required 
+            placeholder="John Doe" 
+            value={ap.name} 
+            onChange={(e) => setApplicantField(applicant, "name", e.target.value)} 
+            error={errors[`${applicant}.name`]}
+          />
+          <InputField 
+            label="Social Security Number" 
+            required 
+            placeholder="XXX-XX-XXXX" 
+            value={ap.ssn} 
+            onChange={(e) => setApplicantField(applicant, "ssn", e.target.value)} 
+            error={errors[`${applicant}.ssn`]}
+          />
+          <InputField 
+            label="Driver's License Number" 
+            required 
+            placeholder="DL123456" 
+            value={ap.dlNumber} 
+            onChange={(e) => setApplicantField(applicant, "dlNumber", e.target.value)} 
+            error={errors[`${applicant}.dlNumber`]}
+          />
+          <InputField 
+            label="Date of Birth" 
+            required 
+            type="date" 
+            value={ap.dateOfBirth} 
+            onChange={(e) => setApplicantField(applicant, "dateOfBirth", e.target.value)} 
+            error={errors[`${applicant}.dateOfBirth`]}
+          />
+          <InputField 
+            label="Home Phone" 
+            required 
+            placeholder="(555) 123-4567" 
+            value={ap.phoneHome} 
+            onChange={(e) => setApplicantField(applicant, "phoneHome", e.target.value)} 
+            error={errors[`${applicant}.phoneHome`]}
+          />
+          <InputField 
+            label="Work Phone" 
+            placeholder="(555) 987-6543" 
+            value={ap.phoneWork} 
+            onChange={(e) => setApplicantField(applicant, "phoneWork", e.target.value)} 
+          />
           <div className="md:col-span-2">
-            <InputField label="Email Address" required type="email" placeholder="john@example.com" value={ap.email} onChange={(e) => setApplicantField(applicant, "email", e.target.value)} />
+            <InputField 
+              label="Email Address" 
+              required 
+              type="email" 
+              placeholder="john@example.com" 
+              value={ap.email} 
+              onChange={(e) => setApplicantField(applicant, "email", e.target.value)} 
+            />
           </div>
         </div>
       </div>
@@ -673,20 +837,84 @@ function ApplicantForm({
         <AddButton onClick={() => addReference(applicant)} label="Add Reference" />
       </div>
 
-      {/* Document Upload */}
-      <div>
+      {/* Document Upload - REQUIRED: Min 2, Max 20 */}
+      <div className={errors[`${applicant}.documents`] ? "error-field" : ""}>
         <SectionTitle icon={<FaFileSignature />} title="Upload Documents" />
-        <p className="text-gray-500 text-sm mb-4">Upload ID, proof of income, and photo of check or money order for the $60 application fee</p>
-        <UploadField
-          onUpload={(fileObj) => setApplicantField(applicant, "documents", [...ap.documents, fileObj])}
-        />
+        
+        {/* Requirements Notice */}
+        <div className={`p-4 rounded-lg mb-4 ${
+          ap.documents.length < 2 
+            ? "bg-red-50 border border-red-200" 
+            : ap.documents.length >= 20 
+              ? "bg-amber-50 border border-amber-200"
+              : "bg-green-50 border border-green-200"
+        }`}>
+          <p className={`text-sm font-medium ${
+            ap.documents.length < 2 
+              ? "text-red-700" 
+              : ap.documents.length >= 20 
+                ? "text-amber-700"
+                : "text-green-700"
+          }`}>
+            <span className="font-bold">Required:</span> Upload between 2 and 20 documents
+            <span className="ml-2">({ap.documents.length}/20 uploaded)</span>
+          </p>
+        </div>
+
+        {/* Application Fee Payment Notice */}
+        <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg mb-4">
+          <p className="text-blue-800 font-semibold text-sm mb-1">Application Fee Payment</p>
+          <p className="text-blue-700 text-sm">
+            To ensure secure processing, the <span className="font-bold">$60 application fee</span> must be submitted via money order or certified check. Please upload clear photos of <span className="font-bold">both sides</span> of the payment.
+          </p>
+        </div>
+
+        {errors[`${applicant}.documents`] && (
+          <p className="text-red-500 text-sm mb-3 flex items-center gap-1">
+            <FaExclamationCircle /> {errors[`${applicant}.documents`]}
+          </p>
+        )}
+
+        {/* Upload Field - Disabled if max reached */}
+        {!maxDocsReached ? (
+          <UploadField
+            onUpload={(fileObj) => {
+              if (ap.documents.length < 20) {
+                setApplicantField(applicant, "documents", [...ap.documents, fileObj]);
+              }
+            }}
+          />
+        ) : (
+          <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm">
+            Maximum 20 documents reached. Remove a document to upload more.
+          </div>
+        )}
+
+        {/* Uploaded Documents List */}
         {ap.documents.length > 0 && (
-          <div className="mt-3 flex flex-wrap gap-2">
-            {ap.documents.map((doc, i) => (
-              <span key={i} className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
-                ✓ Document {i + 1} uploaded
-              </span>
-            ))}
+          <div className="mt-4">
+            <p className="text-sm font-medium text-gray-700 mb-2">Uploaded Documents:</p>
+            <div className="space-y-2">
+              {ap.documents.map((doc, i) => (
+                <div 
+                  key={i} 
+                  className="flex items-center justify-between px-4 py-2 bg-green-50 border border-green-200 rounded-lg"
+                >
+                  <span className="text-green-700 text-sm flex items-center gap-2">
+                    <FaCheckCircle className="text-green-500" />
+                    Document {i + 1}: {doc.name || `File ${i + 1}`}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => removeDocument(i)}
+                    className="text-red-500 hover:text-red-700 p-1"
+                    title="Remove document"
+                  >
+                    <FaTrash size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>

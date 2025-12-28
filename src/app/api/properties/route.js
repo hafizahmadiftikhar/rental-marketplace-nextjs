@@ -15,13 +15,44 @@ export async function GET(req) {
     // Get total count for pagination
     const total = await Property.countDocuments({});
 
-    // Fetch only needed properties with pagination
-    const properties = await Property.find({})
-      .select("propertyName photos location address rentMin rentMax beds baths sqft") // Only select needed fields
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .lean(); // Use lean() for faster queries
+    // Sort: Properties WITH price FIRST, WITHOUT price LAST
+    const properties = await Property.aggregate([
+      {
+        $addFields: {
+          hasPrice: {
+            $cond: {
+              if: { $gt: ["$rentMin", 0] },
+              then: 0,  // 0 = HAS price (comes FIRST)
+              else: 1   // 1 = NO price (comes LAST)
+            }
+          }
+        }
+      },
+      {
+        $sort: { 
+          hasPrice: 1,      // Price wale pehle
+          rentMin: -1,      // Higher price first
+          createdAt: -1     // Then newest first
+        }
+      },
+      { $skip: skip },
+      { $limit: limit },
+      {
+        $project: {
+          propertyName: 1,
+          photos: 1,
+          location: 1,
+          address: 1,
+          rentMin: 1,
+          rentMax: 1,
+          beds: 1,
+          baths: 1,
+          sqft: 1,
+          _id: 1
+          // hasPrice removed automatically (not included)
+        }
+      }
+    ]);
 
     return new Response(
       JSON.stringify({
@@ -38,7 +69,7 @@ export async function GET(req) {
         status: 200,
         headers: { 
           "Content-Type": "application/json",
-          "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" // Cache for 60 seconds
+          "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300"
         },
       }
     );

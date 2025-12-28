@@ -14,7 +14,69 @@ import {
   FaTwitter,
   FaInstagram,
   FaLinkedinIn,
+  FaChevronDown,
 } from "react-icons/fa";
+
+// FAQ Data
+const faqs = [
+  {
+    question: "How do I apply for a rental?",
+    answer:
+      "You can apply online by selecting the property you're interested in and completing our secure rental application. Once submitted, our team will review your information and contact you if any additional details are needed.",
+  },
+  {
+    question: "What documents do I need?",
+    answer: `Applicants are typically required to provide:
+• A valid government-issued photo ID
+• Proof of income (recent pay stubs, offer letter, or bank statements)
+• Rental history and/or references
+• Authorization for a background and credit check
+
+Additional documentation may be requested depending on the property or situation.`,
+  },
+  {
+    question: "How long does approval take?",
+    answer:
+      "Most applications are reviewed within 1–3 business days after all required information is submitted. In some cases, approval may take slightly longer if additional verification is needed.",
+  },
+  {
+    question: "What is the application fee?",
+    answer:
+      "The application fee covers the cost of processing your application, including background and credit checks. The exact fee amount is clearly displayed before you submit your application and is non-refundable.",
+  },
+];
+
+// FAQ Accordion Item Component
+function FAQItem({ question, answer }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="border border-gray-200 rounded-xl overflow-hidden">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full p-4 bg-gray-50 hover:bg-[#658C58]/10 flex items-center justify-between text-left transition-colors"
+      >
+        <span className="text-gray-800 font-medium text-sm pr-4">
+          {question}
+        </span>
+        <FaChevronDown
+          className={`text-[#658C58] flex-shrink-0 transition-transform duration-300 ${
+            isOpen ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+      <div
+        className={`overflow-hidden transition-all duration-300 ${
+          isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        <p className="p-4 text-gray-600 text-sm whitespace-pre-line bg-white">
+          {answer}
+        </p>
+      </div>
+    </div>
+  );
+}
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -89,7 +151,7 @@ export default function Contact() {
         <div className="max-w-6xl mx-auto px-4 text-center">
           <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
             <FaHeadset className="text-[#a5d6a7]" />
-            <span className="text-sm text-white/90">We're Here to Help</span>
+            <span className="text-sm text-white/90">We are Here to Help</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Get in Touch</h1>
           <p className="text-white/80 text-lg max-w-2xl mx-auto">
@@ -113,12 +175,18 @@ export default function Contact() {
                 >
                   <item.icon className="text-white text-xl" />
                 </div>
-                <h3 className="text-sm text-gray-500 font-medium mb-1">{item.title}</h3>
+                <h3 className="text-sm text-gray-500 font-medium mb-1">
+                  {item.title}
+                </h3>
                 {item.href ? (
                   <a
                     href={item.href}
                     target={item.href.startsWith("http") ? "_blank" : undefined}
-                    rel={item.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                    rel={
+                      item.href.startsWith("http")
+                        ? "noopener noreferrer"
+                        : undefined
+                    }
                     className="text-gray-800 font-bold hover:text-[#658C58] transition-colors"
                   >
                     {item.value}
@@ -144,7 +212,8 @@ export default function Contact() {
                   Send Us a Message
                 </h2>
                 <p className="text-gray-600">
-                  Fill out the form below and we'll get back to you as soon as possible.
+                  Fill out the form below and we will get back to you as soon as
+                  possible.
                 </p>
               </div>
 
@@ -153,9 +222,11 @@ export default function Contact() {
                 <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center gap-3">
                   <FaCheckCircle className="text-green-500 text-xl flex-shrink-0" />
                   <div>
-                    <p className="text-green-800 font-semibold">Message Sent!</p>
+                    <p className="text-green-800 font-semibold">
+                      Message Sent!
+                    </p>
                     <p className="text-green-600 text-sm">
-                      We'll get back to you within 24 hours.
+                      We will get back to you within 24 hours.
                     </p>
                   </div>
                 </div>
@@ -165,7 +236,10 @@ export default function Contact() {
                 {/* Name & Email Row */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-gray-700 font-medium mb-2" htmlFor="name">
+                    <label
+                      className="block text-gray-700 font-medium mb-2"
+                      htmlFor="name"
+                    >
                       Your Name <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
@@ -184,7 +258,10 @@ export default function Contact() {
                   </div>
 
                   <div>
-                    <label className="block text-gray-700 font-medium mb-2" htmlFor="email">
+                    <label
+                      className="block text-gray-700 font-medium mb-2"
+                      htmlFor="email"
+                    >
                       Email Address <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
@@ -206,7 +283,10 @@ export default function Contact() {
                 {/* Phone & Subject Row */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-gray-700 font-medium mb-2" htmlFor="phone">
+                    <label
+                      className="block text-gray-700 font-medium mb-2"
+                      htmlFor="phone"
+                    >
                       Phone Number
                     </label>
                     <div className="relative">
@@ -224,7 +304,10 @@ export default function Contact() {
                   </div>
 
                   <div>
-                    <label className="block text-gray-700 font-medium mb-2" htmlFor="subject">
+                    <label
+                      className="block text-gray-700 font-medium mb-2"
+                      htmlFor="subject"
+                    >
                       Subject <span className="text-red-500">*</span>
                     </label>
                     <select
@@ -248,7 +331,10 @@ export default function Contact() {
 
                 {/* Message */}
                 <div>
-                  <label className="block text-gray-700 font-medium mb-2" htmlFor="message">
+                  <label
+                    className="block text-gray-700 font-medium mb-2"
+                    htmlFor="message"
+                  >
                     Your Message <span className="text-red-500">*</span>
                   </label>
                   <textarea
@@ -318,7 +404,9 @@ export default function Contact() {
                   className="w-full"
                 ></iframe>
                 <div className="p-6">
-                  <h3 className="font-bold text-gray-800 mb-2">Visit Our Office</h3>
+                  <h3 className="font-bold text-gray-800 mb-2">
+                    Visit Our Office
+                  </h3>
                   <p className="text-gray-600 text-sm">
                     200 Public Square, Cleveland, OH 44114
                   </p>
@@ -334,25 +422,18 @@ export default function Contact() {
                 </div>
               </div>
 
-              {/* FAQ Quick Links */}
+              {/* FAQ Accordion */}
               <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
                 <h3 className="text-xl font-bold text-gray-800 mb-4">
                   Frequently Asked Questions
                 </h3>
                 <div className="space-y-3">
-                  {[
-                    "How do I apply for a rental?",
-                    "What documents do I need?",
-                    "How long does approval take?",
-                    "What is the application fee?",
-                  ].map((faq, i) => (
-                    <a
+                  {faqs.map((faq, i) => (
+                    <FAQItem
                       key={i}
-                      href="#"
-                      className="block p-3 bg-gray-50 rounded-xl text-gray-700 hover:bg-[#658C58]/10 hover:text-[#658C58] transition-colors text-sm"
-                    >
-                      {faq}
-                    </a>
+                      question={faq.question}
+                      answer={faq.answer}
+                    />
                   ))}
                 </div>
               </div>
@@ -365,14 +446,25 @@ export default function Contact() {
                 </p>
                 <div className="flex gap-3">
                   {[
-                    { icon: FaFacebookF, href: "https://www.facebook.com/share/18DksJ81js/" },
+                    {
+                      icon: FaFacebookF,
+                      href: "https://www.facebook.com/share/18DksJ81js/",
+                    },
                     { icon: FaTwitter, href: "https://x.com/RivoRent" },
-                    { icon: FaInstagram, href: "http://instagram.com/_rivorent" },
-                    { icon: FaLinkedinIn, href: "https://www.linkedin.com/in/rivo-rent-a1136139a" },
+                    {
+                      icon: FaInstagram,
+                      href: "http://instagram.com/_rivorent",
+                    },
+                    {
+                      icon: FaLinkedinIn,
+                      href: "https://www.linkedin.com/in/rivo-rent-a1136139a",
+                    },
                   ].map((social, i) => (
                     <a
                       key={i}
                       href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="w-10 h-10 bg-white/20 hover:bg-white hover:text-[#658C58] rounded-xl flex items-center justify-center transition-all duration-300"
                     >
                       <social.icon />

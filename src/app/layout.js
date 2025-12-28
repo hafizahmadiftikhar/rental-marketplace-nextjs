@@ -493,11 +493,11 @@ export const metadata = {
     title: "RivoRent - Find & Rent Properties Across America",
     description:
       "RivoRent helps you find the perfect rental home or apartment in the USA. Browse listings, view photos, and apply online effortlessly.",
-    url: "https://www.rivorent.com",
+    url: "https://www.Rivo.Rent",
     siteName: "RivoRent",
     images: [
       {
-        url: "https://www.rivorent.com/og-image.png",
+        url: "https://www.Rivo.Rent/og-image.png",
         width: 1200,
         height: 630,
         alt: "RivoRent - Rental Properties USA",
@@ -510,7 +510,7 @@ export const metadata = {
     title: "RivoRent - Find & Rent Properties Across America",
     description:
       "RivoRent helps you find the perfect rental home or apartment in the USA. Browse listings, view photos, and apply online effortlessly.",
-    images: ["https://www.rivorent.com/og-image.png"],
+    images: ["https://www.Rivo.Rent/og-image.png"],
   },
 };
 
@@ -526,8 +526,8 @@ export default function RootLayout({ children }) {
               "@context": "https://schema.org",
               "@type": "RealEstateAgent",
               name: "RivoRent",
-              url: "https://www.rivorent.com",
-              logo: "https://www.rivorent.com/logo.png",
+              url: "https://www.Rivo.Rent",
+              logo: "https://www.Rivo.Rent/logo.png",
               sameAs: [
                 "https://www.facebook.com/share/17wEiW16gm/?mibextid=wwXIfr",
                 "https://www.twitter.com/rivorent",

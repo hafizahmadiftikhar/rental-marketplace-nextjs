@@ -5,14 +5,14 @@ import { FaStar, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 
 const reviews = [
-  { id: 1, name: "Jessica R.", date: "2025-10-12", description: "Rivorent.com made finding my dream apartment a breeze. The platform is smooth, reliable, and easy to use. Highly recommended!", stars: 5 },
+  { id: 1, name: "Jessica R.", date: "2025-10-12", description: "Rivo.Rent made finding my dream apartment a breeze. The platform is smooth, reliable, and easy to use. Highly recommended!", stars: 5 },
   { id: 2, name: "Mark T.", date: "2025-09-22", description: "Fantastic experience! The listings are authentic, and the support team is super helpful.", stars: 4 },
-  { id: 3, name: "Samantha L.", date: "2025-08-30", description: "I found a perfect 2-bedroom apartment within days. Rivorent.com really simplifies renting.", stars: 5 },
+  { id: 3, name: "Samantha L.", date: "2025-08-30", description: "I found a perfect 2-bedroom apartment within days. Rivo.Rent really simplifies renting.", stars: 5 },
   { id: 4, name: "David H.", date: "2025-07-15", description: "Excellent service, smooth interface, and real reviews. Makes online renting stress-free.", stars: 4 },
   { id: 5, name: "Olivia M.", date: "2025-06-28", description: "I love how detailed the property information is. Saved me a lot of time visiting wrong listings.", stars: 5 },
-  { id: 6, name: "Ryan P.", date: "2025-05-19", description: "Very satisfied with Rivorent.com. The search filters are perfect, and the website runs flawlessly.", stars: 4 },
-  { id: 7, name: "Emily K.", date: "2025-04-11", description: "Found my apartment in no time! Rivorent.com is intuitive and trustworthy.", stars: 5 },
-  { id: 8, name: "James B.", date: "2025-03-02", description: "Highly recommend Rivorent.com for anyone looking to rent. Smooth experience and great support.", stars: 5 },
+  { id: 6, name: "Ryan P.", date: "2025-05-19", description: "Very satisfied with Rivo.Rent. The search filters are perfect, and the website runs flawlessly.", stars: 4 },
+  { id: 7, name: "Emily K.", date: "2025-04-11", description: "Found my apartment in no time! Rivo.Rent is intuitive and trustworthy.", stars: 5 },
+  { id: 8, name: "James B.", date: "2025-03-02", description: "Highly recommend Rivo.Rent for anyone looking to rent. Smooth experience and great support.", stars: 5 },
 ];
 
 export default function ReviewsAnimated() {
@@ -89,7 +89,7 @@ export default function ReviewsAnimated() {
             What Our Users Say
           </h1>
           <p className="text-gray-600 text-lg md:text-xl max-w-2xl mx-auto">
-            Real feedback from real renters using Rivorent.com
+            Real feedback from real renters using Rivo.Rent
           </p>
         </div>
         <div className="max-w-7xl mx-auto">
@@ -136,7 +136,7 @@ export default function ReviewsAnimated() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="text-gray-600 text-lg md:text-xl max-w-2xl mx-auto"
         >
-          Real feedback from real renters using Rivorent.com
+          Real feedback from real renters using Rivo.Rent
         </motion.p>
       </div>
 

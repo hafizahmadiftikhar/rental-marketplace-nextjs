@@ -72,8 +72,8 @@ export default function Navbar() {
           <div className="flex justify-between items-center h-16 md:h-20">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-[#658C58] to-[#507144] rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow">
-                <FaHome className="text-white text-lg" />
+              <div className="w-10 h-10 bg-gradient-to-br from-[#658C58] to-[#507144]  flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow">
+                <FaHome className="text-white text-2xl" />
               </div>
               <div className="flex flex-col">
                 <span className="text-[#2F5233] font-bold text-xl leading-tight">

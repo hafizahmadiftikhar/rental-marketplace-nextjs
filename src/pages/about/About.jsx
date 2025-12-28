@@ -288,7 +288,7 @@ export default function About() {
             {/* Right - Stats */}
             <div className="grid grid-cols-2 gap-4">
               {[
-                { value: "135+", label: "Years of Experience" },
+                // { value: "135+", label: "Years of Experience" },
                 { value: "500+", label: "Properties Managed" },
                 { value: "1000+", label: "Happy Tenants" },
                 { value: "98%", label: "Satisfaction Rate" },

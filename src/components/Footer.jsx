@@ -152,7 +152,7 @@ const Footer = () => {
           </div>
 
           {/* Column 4: Newsletter */}
-          <div>
+          {/* <div>
             <h4 className="text-lg font-semibold mb-6 text-white relative">
               Stay Updated
               <span className="absolute bottom-[-8px] left-0 w-10 h-1 bg-[#658C58] rounded-full"></span>
@@ -171,7 +171,6 @@ const Footer = () => {
               </button>
             </div>
 
-            {/* Trust Badges */}
             <div className="mt-6 flex gap-2">
               <div className="px-3 py-1.5 bg-white/5 rounded-lg">
                 <p className="text-[10px] text-gray-500">Licensed</p>
@@ -182,36 +181,37 @@ const Footer = () => {
                 <p className="text-xs text-white font-medium">Properties</p>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* Service Areas - Postal Codes */}
-        <div className="mt-12 pt-10 border-t border-white/10">
-          <div className="flex items-center justify-between mb-6">
-            <h4 className="text-lg font-semibold text-white">
-              Service Areas <span className="text-gray-500 text-sm font-normal ml-2">({postalCodes.length} ZIP Codes)</span>
-            </h4>
-            <button
-              onClick={() => setShowAllCodes(!showAllCodes)}
-              className="flex items-center gap-2 text-[#658C58] text-sm hover:underline"
-            >
-              {showAllCodes ? "Show Less" : "View All"}
-              {showAllCodes ? <FaChevronUp /> : <FaChevronDown />}
-            </button>
-          </div>
-          
-          <div className="flex flex-wrap gap-2">
-            {displayedCodes.map((code) => (
-              <Link
-                key={code}
-                href={`/search?postalCode=${code}`}
-                className="px-3 py-1.5 bg-white/5 rounded-lg text-gray-400 text-xs hover:bg-[#658C58] hover:text-white transition-all duration-300"
-              >
-                {code}
-              </Link>
-            ))}
-          </div>
-        </div>
+<div className="mt-12 pt-10 border-t border-white/10">
+  <div className="flex items-center justify-between mb-6">
+    <h4 className="text-lg font-semibold text-white">
+      Service Areas <span className="text-gray-500 text-sm font-normal ml-2">({postalCodes.length} ZIP Codes)</span>
+    </h4>
+    <button
+      onClick={() => setShowAllCodes(!showAllCodes)}
+      className="flex items-center gap-2 text-[#658C58] text-sm hover:underline"
+    >
+      {showAllCodes ? "Show Less" : "View All"}
+      {showAllCodes ? <FaChevronUp /> : <FaChevronDown />}
+    </button>
+  </div>
+  
+  {/* ✅ Changed from flex-wrap to grid */}
+  <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2">
+    {displayedCodes.map((code) => (
+      <Link
+        key={code}
+        href={`/search?postalCode=${code}`}
+        className="px-2 py-1.5 bg-white/5 rounded-lg text-gray-400 text-xs hover:bg-[#658C58] hover:text-white transition-all duration-300 text-center"
+      >
+        {code}
+      </Link>
+    ))}
+  </div>
+</div>
       </div>
 
       {/* Bottom Bar */}
@@ -225,12 +225,12 @@ const Footer = () => {
               <Link href="/privacy-policy" className="text-gray-500 hover:text-[#658C58] transition-colors">
                 Privacy Policy
               </Link>
-              <Link href="/terms" className="text-gray-500 hover:text-[#658C58] transition-colors">
+              {/* <Link href="/terms" className="text-gray-500 hover:text-[#658C58] transition-colors">
                 Terms of Service
               </Link>
               <Link href="/sitemap" className="text-gray-500 hover:text-[#658C58] transition-colors">
                 Sitemap
-              </Link>
+              </Link> */}
             </div>
           </div>
         </div>

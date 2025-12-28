@@ -18,7 +18,7 @@ export async function GET(req) {
       );
     }
 
-    // Build search query - search in multiple fields
+    // Build search query
     const searchQuery = {
       $or: [
         { "location.postalCode": postalCode },
@@ -31,13 +31,46 @@ export async function GET(req) {
     // Get total count
     const total = await Property.countDocuments(searchQuery);
 
-    // Fetch properties with pagination
-    const properties = await Property.find(searchQuery)
-      .select("propertyName photos location address rentMin rentMax beds baths sqft")
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .lean();
+    // Sort: Properties WITH price FIRST, WITHOUT price LAST
+    const properties = await Property.aggregate([
+      {
+        $match: searchQuery
+      },
+      {
+        $addFields: {
+          hasPrice: {
+            $cond: {
+              if: { $gt: ["$rentMin", 0] },
+              then: 0,  // 0 = HAS price (comes FIRST)
+              else: 1   // 1 = NO price (comes LAST)
+            }
+          }
+        }
+      },
+      {
+        $sort: { 
+          hasPrice: 1,      // Price wale pehle
+          rentMin: -1,      // Higher price first
+          createdAt: -1     // Then newest first
+        }
+      },
+      { $skip: skip },
+      { $limit: limit },
+      {
+        $project: {
+          propertyName: 1,
+          photos: 1,
+          location: 1,
+          address: 1,
+          rentMin: 1,
+          rentMax: 1,
+          beds: 1,
+          baths: 1,
+          sqft: 1,
+          _id: 1
+        }
+      }
+    ]);
 
     return new Response(
       JSON.stringify({

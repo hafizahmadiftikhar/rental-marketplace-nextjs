@@ -310,7 +310,6 @@ export default function PropertyDetails() {
                   <p className="text-gray-600 text-sm md:text-base">
                     Receive one month free rent with a 12-month lease on select units.
                   </p>
-                  <p className="text-gray-400 text-xs mt-1">Terms and conditions apply.</p>
                 </div>
               </div>
             </div>
@@ -438,7 +437,7 @@ export default function PropertyDetails() {
                 </div>
                 <div className="flex items-center gap-2 bg-gray-100 p-3 rounded-lg">
                   <FaGlobe className="text-[#658C58]" size={16} />
-                  <span className="text-sm font-medium text-gray-800">RivoRent.com</span>
+                  <span className="text-sm font-medium text-gray-800">Rivo.Rent</span>
                 </div>
                 <div className="flex items-center gap-2 bg-gray-100 p-3 rounded-lg">
                   <FaLanguage className="text-[#658C58]" size={16} />
@@ -484,10 +483,10 @@ export default function PropertyDetails() {
                 </Link>
                 <Link href="/apply">
                   <button className="w-full border-2 border-[#658C58] text-[#658C58] py-3 rounded-xl hover:bg-[#658C58] hover:text-white transition font-semibold">
-                    ✉️ Send Message
+                    ✉️ Apply Now
                   </button>
                 </Link>
-                <p className="text-center text-gray-400 text-xs mt-3">Usually responds within 24 hours</p>
+                <p className="text-center text-gray-400 text-xs mt-3">Apply Online to Lease This Property</p>
               </div>
 
               {/* Quick Facts */}
