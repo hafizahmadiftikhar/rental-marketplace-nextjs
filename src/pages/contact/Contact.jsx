@@ -6,15 +6,15 @@ import {
   FaPhone,
   FaMapMarkerAlt,
   FaClock,
-  FaPaperPlane,
-  FaUser,
   FaHeadset,
-  FaCheckCircle,
   FaFacebookF,
   FaTwitter,
   FaInstagram,
   FaLinkedinIn,
   FaChevronDown,
+  FaWhatsapp,
+  FaCommentDots,
+  FaArrowRight,
 } from "react-icons/fa";
 
 // FAQ Data
@@ -79,66 +79,35 @@ function FAQItem({ question, answer }) {
 }
 
 export default function Contact() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    subject: "",
-    message: "",
-  });
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      console.log("Form submitted:", formData);
-      setLoading(false);
-      setSuccess(true);
-      setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
-
-      // Reset success message after 5 seconds
-      setTimeout(() => setSuccess(false), 5000);
-    }, 1500);
-  };
-
   const contactInfo = [
     {
       icon: FaPhone,
       title: "Phone",
       value: "(845) 576-9038",
       href: "tel:+18455769038",
-      subtitle: "We call this number (845) 576-9038",
+      subtitle: "Call or Text",
       color: "from-blue-500 to-blue-600",
+    },
+    {
+      icon: FaWhatsapp,
+      title: "WhatsApp",
+      value: "(646) 745-4567",
+      href: "https://wa.me/16467454567",
+      subtitle: "Fast Response",
+      color: "from-green-500 to-green-600",
     },
     {
       icon: FaEnvelope,
       title: "Email",
       value: "Support@Rivo.Rent",
-      subtitle: "We reply within 24 hours",
       href: "mailto:Support@Rivo.Rent",
-      color: "from-green-500 to-green-600",
-    },
-    {
-      icon: FaMapMarkerAlt,
-      title: "Office",
-      value: "200 Public Square",
-      subtitle: "Cleveland, OH 44114",
-      href: "https://maps.google.com/?q=200+Public+Square+Cleveland+OH",
       color: "from-purple-500 to-purple-600",
     },
     {
       icon: FaClock,
       title: "Business Hours",
       value: "Mon - Fri: 8:00 AM - 10:00 PM",
-      subtitle: "Sat: 10:00 AM - 4:00 PM ",
+      subtitle: "Sat: 10:00 AM - 4:00 PM",
       href: null,
       color: "from-orange-500 to-orange-600",
     },
@@ -205,188 +174,102 @@ export default function Contact() {
       <section className="py-12 md:py-20 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Left - Form */}
+            
+            {/* Left - BIG CONTACT BUTTONS (Replaced Form) */}
             <div className="bg-white rounded-2xl shadow-xl p-8 md:p-10">
-              <div className="mb-8">
+              <div className="mb-8 text-center">
                 <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
-                  Send Us a Message
+                  Contact Us Directly
                 </h2>
                 <p className="text-gray-600">
-                  Fill out the form below and we will get back to you as soon as
-                  possible.
+                  Choose your preferred way to reach us!
                 </p>
+                <div className="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg">
+                  <FaClock className="text-[#658C58]" />
+                  <span className="text-gray-700 text-sm">
+                    <span className="font-semibold">Mon - Fri:</span> 8:00 AM - 10:00 PM | <span className="font-semibold">Sat:</span> 10:00 AM - 4:00 PM
+                  </span>
+                </div>
               </div>
 
-              {/* Success Message */}
-              {success && (
-                <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center gap-3">
-                  <FaCheckCircle className="text-green-500 text-xl flex-shrink-0" />
-                  <div>
-                    <p className="text-green-800 font-semibold">
-                      Message Sent!
-                    </p>
-                    <p className="text-green-600 text-sm">
-                      We will get back to you within 24 hours.
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit} className="space-y-5">
-                {/* Name & Email Row */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div>
-                    <label
-                      className="block text-gray-700 font-medium mb-2"
-                      htmlFor="name"
-                    >
-                      Your Name <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                      <input
-                        type="text"
-                        name="name"
-                        id="name"
-                        placeholder="John Doe"
-                        value={formData.name}
-                        onChange={handleChange}
-                        className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#658C58] focus:border-transparent text-gray-800 bg-gray-50"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label
-                      className="block text-gray-700 font-medium mb-2"
-                      htmlFor="email"
-                    >
-                      Email Address <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                      <input
-                        type="email"
-                        name="email"
-                        id="email"
-                        placeholder="john@example.com"
-                        value={formData.email}
-                        onChange={handleChange}
-                        className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#658C58] focus:border-transparent text-gray-800 bg-gray-50"
-                        required
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Phone & Subject Row */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div>
-                    <label
-                      className="block text-gray-700 font-medium mb-2"
-                      htmlFor="phone"
-                    >
-                      Phone Number
-                    </label>
-                    <div className="relative">
-                      <FaPhone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                      <input
-                        type="tel"
-                        name="phone"
-                        id="phone"
-                        placeholder="(555) 123-4567"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#658C58] focus:border-transparent text-gray-800 bg-gray-50"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label
-                      className="block text-gray-700 font-medium mb-2"
-                      htmlFor="subject"
-                    >
-                      Subject <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      name="subject"
-                      id="subject"
-                      value={formData.subject}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#658C58] focus:border-transparent text-gray-800 bg-gray-50 appearance-none cursor-pointer"
-                      required
-                    >
-                      <option value="">Select a topic</option>
-                      <option value="general">General Inquiry</option>
-                      <option value="rental">Rental Question</option>
-                      <option value="application">Application Help</option>
-                      <option value="maintenance">Maintenance Request</option>
-                      <option value="payment">Payment Issue</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Message */}
-                <div>
-                  <label
-                    className="block text-gray-700 font-medium mb-2"
-                    htmlFor="message"
-                  >
-                    Your Message <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    name="message"
-                    id="message"
-                    placeholder="How can we help you today?"
-                    value={formData.message}
-                    onChange={handleChange}
-                    rows={5}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#658C58] focus:border-transparent text-gray-800 bg-gray-50 resize-none"
-                    required
-                  ></textarea>
-                </div>
-
-                {/* Submit Button */}
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-gradient-to-r from-[#658C58] to-[#507144] hover:from-[#507144] hover:to-[#658C58] text-white font-semibold py-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+              {/* Big Contact Buttons */}
+              <div className="space-y-4">
+                
+                {/* WhatsApp Button - BIGGEST */}
+                <a
+                  href="https://wa.me/16467454567"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full p-6 bg-gradient-to-r from-[#25D366] to-[#128C7E] hover:from-[#128C7E] hover:to-[#25D366] rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 group"
                 >
-                  {loading ? (
-                    <>
-                      <svg
-                        className="animate-spin h-5 w-5"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                      Sending...
-                    </>
-                  ) : (
-                    <>
-                      <FaPaperPlane />
-                      Send Message
-                    </>
-                  )}
-                </button>
-              </form>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <FaWhatsapp className="text-white text-4xl" />
+                      </div>
+                      <div className="text-white">
+                        <p className="text-sm font-medium opacity-90">WhatsApp Us</p>
+                        <p className="text-2xl md:text-3xl font-bold">(646) 745-4567</p>
+                      </div>
+                    </div>
+                    <FaArrowRight className="text-white text-2xl opacity-70 group-hover:opacity-100 group-hover:translate-x-2 transition-all" />
+                  </div>
+                </a>
+
+                {/* Call/Text Button */}
+                <a
+                  href="tel:+18455769038"
+                  className="block w-full p-6 bg-gradient-to-r from-[#3B82F6] to-[#1D4ED8] hover:from-[#1D4ED8] hover:to-[#3B82F6] rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 group"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <FaPhone className="text-white text-3xl" />
+                      </div>
+                      <div className="text-white">
+                        <p className="text-sm font-medium opacity-90">Call or Text Us</p>
+                        <p className="text-2xl md:text-3xl font-bold">(845) 576-9038</p>
+                      </div>
+                    </div>
+                    <FaArrowRight className="text-white text-2xl opacity-70 group-hover:opacity-100 group-hover:translate-x-2 transition-all" />
+                  </div>
+                </a>
+
+                {/* Email Button */}
+                <a
+                  href="mailto:Support@Rivo.Rent"
+                  className="block w-full p-6 bg-gradient-to-r from-[#658C58] to-[#507144] hover:from-[#507144] hover:to-[#658C58] rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 group"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <FaEnvelope className="text-white text-3xl" />
+                      </div>
+                      <div className="text-white">
+                        <p className="text-sm font-medium opacity-90">Email Us</p>
+                        <p className="text-xl md:text-2xl font-bold">Support@Rivo.Rent</p>
+                      </div>
+                    </div>
+                    <FaArrowRight className="text-white text-2xl opacity-70 group-hover:opacity-100 group-hover:translate-x-2 transition-all" />
+                  </div>
+                </a>
+
+              </div>
+
+              {/* Quick Response Note */}
+              <div className="mt-8 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 bg-[#658C58]/10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <FaCommentDots className="text-[#658C58]" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-800">Quick Response</p>
+                    <p className="text-gray-600 text-sm mt-1">
+                      WhatsApp is the fastest way to reach us! Our team responds during business hours.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Right - Info */}
@@ -394,7 +277,7 @@ export default function Contact() {
               {/* Map */}
               <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2988.1234567890123!2d-81.6937!3d41.5002!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8830f07e0f7d4745%3A0x5d9a4a2e8c7e1234!2s200%20Public%20Square%2C%20Cleveland%2C%20OH%2044114!5e0!3m2!1sen!2sus!4v1234567890123"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2988.436073562391!2d-81.69088768455387!3d41.49945797925128!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8830f07e7a89c6a5%3A0x5e6a6c4c1e4f5a5a!2s200%20Public%20Square%2C%20Cleveland%2C%20OH%2044114!5e0!3m2!1sen!2sus!4v1703836800000!5m2!1sen!2sus"
                   width="100%"
                   height="300"
                   style={{ border: 0 }}

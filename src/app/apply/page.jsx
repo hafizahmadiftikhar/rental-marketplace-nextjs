@@ -333,7 +333,8 @@ export default function RentalApplicationForm() {
             </div>
             <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
               <p className="text-amber-800 text-sm">
-                <span className="font-bold">⚠️ Important:</span> The $60 application fee is non-refundable. Please upload a photo of your money order or certified check.
+                <span className="font-bold">⚠️ Important: Application Fee Payment</span><br />
+                To ensure secure processing, the $60 application fee must be submitted via money order or certified check. Please upload clear photos of <span className="font-bold">both sides</span> of the payment.
               </p>
             </div>
           </div>
@@ -841,26 +842,6 @@ function ApplicantForm({
       <div className={errors[`${applicant}.documents`] ? "error-field" : ""}>
         <SectionTitle icon={<FaFileSignature />} title="Upload Documents" />
         
-        {/* Requirements Notice */}
-        <div className={`p-4 rounded-lg mb-4 ${
-          ap.documents.length < 2 
-            ? "bg-red-50 border border-red-200" 
-            : ap.documents.length >= 20 
-              ? "bg-amber-50 border border-amber-200"
-              : "bg-green-50 border border-green-200"
-        }`}>
-          <p className={`text-sm font-medium ${
-            ap.documents.length < 2 
-              ? "text-red-700" 
-              : ap.documents.length >= 20 
-                ? "text-amber-700"
-                : "text-green-700"
-          }`}>
-            <span className="font-bold">Required:</span> Upload between 2 and 20 documents
-            <span className="ml-2">({ap.documents.length}/20 uploaded)</span>
-          </p>
-        </div>
-
         {/* Application Fee Payment Notice */}
         <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg mb-4">
           <p className="text-blue-800 font-semibold text-sm mb-1">Application Fee Payment</p>
