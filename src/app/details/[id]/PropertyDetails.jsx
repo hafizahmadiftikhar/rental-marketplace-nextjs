@@ -30,6 +30,7 @@ export default function PropertyDetails() {
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const [index, setIndex] = useState(0);
+  const [mobileIndex, setMobileIndex] = useState(0);
   const [copied, setCopied] = useState(false);
   
   const [randomAmenities, setRandomAmenities] = useState({
@@ -39,7 +40,6 @@ export default function PropertyDetails() {
   });
   const [randomReviews, setRandomReviews] = useState([]);
 
-  // Fetch single property (FAST)
   useEffect(() => {
     async function loadData() {
       try {
@@ -69,10 +69,8 @@ export default function PropertyDetails() {
 
   const averageRating = getAverageRating(randomReviews);
 
-  // Copy link function
   const handleShare = async () => {
     const url = window.location.href;
-    
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
@@ -89,7 +87,6 @@ export default function PropertyDetails() {
     }
   };
 
-  // Loading State
   if (loading)
     return (
       <div className="flex flex-col items-center justify-center h-[60vh] md:h-[70vh] w-full">
@@ -108,7 +105,6 @@ export default function PropertyDetails() {
       </div>
     );
 
-  // Not Found State
   if (!property)
     return (
       <h1 className="text-center p-10 text-xl md:text-3xl">
@@ -121,22 +117,20 @@ export default function PropertyDetails() {
   const currentImages = images.slice(index * 5, index * 5 + 5);
 
   const nextSlide = () => setIndex((prev) => (prev + 1) % totalSlides);
-  const prevSlide = () =>
-    setIndex((prev) => (prev - 1 + totalSlides) % totalSlides);
+  const prevSlide = () => setIndex((prev) => (prev - 1 + totalSlides) % totalSlides);
 
   return (
     <div className="flex flex-col w-full bg-gray-50">
       
-      {/* ==================== HERO SECTION ==================== */}
       <section className="w-full flex justify-center py-3 md:py-4 lg:py-6 bg-white">
         <div className="w-[95%] md:w-[90%] lg:w-[85%] xl:w-[80%] max-w-7xl">
           
-          {/* Mobile View - Single Image */}
+          {/* Mobile View - Single Image - FIXED */}
           <div className="md:hidden relative h-[280px] sm:h-[320px] rounded-xl overflow-hidden shadow-lg">
             {images.length > 0 ? (
               <Image
-                src={images[index % images.length]}
-                alt={`Property ${index + 1}`}
+                src={images[mobileIndex]}
+                alt={`Property ${mobileIndex + 1}`}
                 fill
                 className="object-cover"
                 priority
@@ -147,23 +141,22 @@ export default function PropertyDetails() {
               </div>
             )}
             
-            {/* Mobile Navigation */}
             {images.length > 1 && (
               <>
                 <button
-                  onClick={prevSlide}
+                  onClick={() => setMobileIndex((prev) => (prev - 1 + images.length) % images.length)}
                   className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 text-[#658C58] p-2 rounded-full shadow-md"
                 >
                   <FaChevronLeft size={16} />
                 </button>
                 <button
-                  onClick={nextSlide}
+                  onClick={() => setMobileIndex((prev) => (prev + 1) % images.length)}
                   className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 text-[#658C58] p-2 rounded-full shadow-md"
                 >
                   <FaChevronRight size={16} />
                 </button>
                 <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/60 text-white px-3 py-1 rounded-full text-sm font-medium">
-                  {(index % images.length) + 1} / {images.length}
+                  {mobileIndex + 1} / {images.length}
                 </div>
               </>
             )}
@@ -173,7 +166,6 @@ export default function PropertyDetails() {
           <div className="hidden md:block">
             <div className="grid grid-cols-4 grid-rows-2 gap-2 lg:gap-3 h-[350px] lg:h-[400px] xl:h-[450px] rounded-2xl overflow-hidden">
               
-              {/* Main Large Image */}
               <div className="col-span-2 row-span-2 relative group cursor-pointer">
                 {currentImages[0] && (
                   <>
@@ -189,7 +181,6 @@ export default function PropertyDetails() {
                 )}
               </div>
 
-              {/* 4 Smaller Images */}
               {currentImages.slice(1, 5).map((img, i) => (
                 <div key={i} className="relative group cursor-pointer overflow-hidden">
                   <Image
@@ -203,7 +194,6 @@ export default function PropertyDetails() {
               ))}
             </div>
 
-            {/* Navigation */}
             {images.length > 5 && (
               <div className="flex justify-center gap-3 mt-4">
                 <button
@@ -227,14 +217,11 @@ export default function PropertyDetails() {
         </div>
       </section>
 
-      {/* ==================== CONTENT SECTION ==================== */}
       <section className="w-full flex justify-center py-6 md:py-8 lg:py-10">
         <div className="w-[95%] md:w-[90%] lg:w-[85%] xl:w-[80%] max-w-7xl flex flex-col lg:flex-row gap-6 lg:gap-8">
           
-          {/* ========== LEFT CONTENT ========== */}
           <div className="w-full lg:w-[65%] space-y-5 md:space-y-6">
             
-            {/* Property Header */}
             <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-sm">
               <div className="flex items-start justify-between gap-3 mb-3">
                 <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 leading-tight">
@@ -273,7 +260,6 @@ export default function PropertyDetails() {
               </div>
             </div>
 
-            {/* Property Info Boxes */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <InfoBox title="Monthly Rent" icon="💰"
                 value={
@@ -291,7 +277,6 @@ export default function PropertyDetails() {
               <InfoBox title="Sq Feet" value={`${property.sqft || "N/A"}`} icon="📐" />
             </div>
 
-            {/* Property Overview */}
             <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-sm">
               <h2 className="text-lg md:text-xl font-bold text-gray-800 mb-3">📋 Property Overview</h2>
               <p className="text-gray-600 text-sm md:text-base leading-relaxed">
@@ -299,7 +284,6 @@ export default function PropertyDetails() {
               </p>
             </div>
 
-            {/* Leasing Incentive - Professional Version */}
             <div className="bg-white border border-gray-200 rounded-xl p-4 md:p-5 shadow-sm">
               <div className="flex items-start gap-3">
                 <div className="w-10 h-10 bg-[#658C58]/10 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -314,7 +298,6 @@ export default function PropertyDetails() {
               </div>
             </div>
 
-            {/* Neighborhood */}
             {property.neighborhoodDescription && (
               <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-sm">
                 <h2 className="text-lg md:text-xl font-bold text-gray-800 mb-3">🏘️ Neighborhood</h2>
@@ -322,7 +305,6 @@ export default function PropertyDetails() {
               </div>
             )}
 
-            {/* Amenities */}
             {randomAmenities.community.length > 0 && (
               <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-sm">
                 <h2 className="text-lg md:text-xl font-bold text-gray-800 mb-4">🏢 Community Amenities</h2>
@@ -351,7 +333,6 @@ export default function PropertyDetails() {
               </div>
             )}
 
-            {/* Models/Floor Plans */}
             <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-sm">
               <h2 className="text-lg md:text-xl font-bold text-gray-800 mb-4">🏡 Available Floor Plans</h2>
               {property.models && property.models.length > 0 ? (
@@ -379,12 +360,10 @@ export default function PropertyDetails() {
               )}
             </div>
 
-            {/* Model Carousel */}
             {property.models && property.models.length > 0 && (
               <ModelCarousel models={property.models} />
             )}
 
-            {/* Reviews */}
             <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-sm">
               <h2 className="text-lg md:text-xl font-bold text-gray-800 mb-4">⭐ Reviews</h2>
               <div className="flex flex-col sm:flex-row gap-4 mb-5">
@@ -422,18 +401,12 @@ export default function PropertyDetails() {
 
             <FAQSection />
 
-            {/* Contact Info */}
             <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-sm">
               <h2 className="text-lg md:text-xl font-bold text-gray-800 mb-4">📞 Contact Info</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <div className="flex items-center gap-2 bg-gray-100 p-3 rounded-lg">
                   <FaPhoneAlt className="text-[#658C58]" size={16} />
-                  <a 
-                    href="tel:+18455769038"
-                    className="text-sm font-medium text-gray-800"
-                  >
-                    (845) 576-9038
-                  </a>
+                  <a href="tel:+18455769038" className="text-sm font-medium text-gray-800">(845) 576-9038</a>
                 </div>
                 <div className="flex items-center gap-2 bg-gray-100 p-3 rounded-lg">
                   <FaGlobe className="text-[#658C58]" size={16} />
@@ -451,10 +424,8 @@ export default function PropertyDetails() {
             </div>
           </div>
 
-          {/* ========== RIGHT SIDEBAR ========== */}
           <div className="w-full lg:w-[35%]">
             <div className="lg:sticky lg:top-4 space-y-4">
-              {/* Price & Contact Card */}
               <div className="bg-white shadow-lg rounded-xl md:rounded-2xl p-5 border border-gray-100">
                 <div className="text-center mb-4">
                   <p className="text-2xl md:text-3xl font-bold text-[#658C58]">
@@ -489,7 +460,6 @@ export default function PropertyDetails() {
                 <p className="text-center text-gray-400 text-xs mt-3">Apply Online to Lease This Property</p>
               </div>
 
-              {/* Quick Facts */}
               <div className="bg-[#E8F5E9] rounded-xl p-5">
                 <h3 className="font-bold text-[#2E7D32] mb-3">💡 Quick Facts</h3>
                 <ul className="space-y-2 text-sm text-[#2E7D32]">

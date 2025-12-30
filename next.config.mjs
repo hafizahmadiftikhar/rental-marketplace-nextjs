@@ -1,8 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["images1.apartments.com"], // add all domains your API images use
-
     remotePatterns: [
       {
         protocol: "https",
@@ -10,9 +8,11 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "apartments.com",
+        hostname: "**.apartments.com",
       },
     ],
+    minimumCacheTTL: 60,
+    unoptimized: true,
   },
   reactCompiler: true,
 };
