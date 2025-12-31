@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import SignaturePadComponent from "../../components/s/SignaturePad";
-import UploadField from "../../components/s/UploadField";
 import { 
   FaUser, 
   FaBriefcase, 
@@ -19,7 +18,8 @@ import {
   FaUserTie,
   FaPlus,
   FaTrash,
-  FaExclamationCircle
+  FaExclamationCircle,
+  FaCloudUploadAlt
 } from "react-icons/fa";
 
 export default function RentalApplicationForm() {
@@ -671,20 +671,38 @@ function ApplicantForm({
   const maxDocsReached = ap.documents.length >= 20;
 
   const removeDocument = (index) => {
+    if (isUploading) return;
     const updatedDocs = ap.documents.filter((_, i) => i !== index);
     setApplicantField(applicant, "documents", updatedDocs);
   };
 
-  const handleFileUpload = async (fileObj) => {
-    if (ap.documents.length >= 20 || isUploading) return;
+  const handleSingleFileUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file || isUploading || ap.documents.length >= 20) {
+      e.target.value = '';
+      return;
+    }
     
     setIsUploading(true);
-    try {
-      await new Promise(resolve => setTimeout(resolve, 300));
-      setApplicantField(applicant, "documents", [...ap.documents, fileObj]);
-    } finally {
+    
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = reader.result;
+      setTimeout(() => {
+        setApplicantField(applicant, "documents", [
+          ...ap.documents, 
+          { name: file.name, data: base64, type: file.type }
+        ]);
+        setIsUploading(false);
+      }, 500);
+    };
+    reader.onerror = () => {
+      alert("Error reading file. Please try again.");
       setIsUploading(false);
-    }
+    };
+    reader.readAsDataURL(file);
+    
+    e.target.value = '';
   };
 
   return (
@@ -836,7 +854,7 @@ function ApplicantForm({
         <AddButton onClick={() => addReference(applicant)} label="Add Reference" />
       </div>
 
-      {/* Document Upload - ONE FILE AT A TIME */}
+      {/* Document Upload - SINGLE FILE ONLY */}
       <div className={errors[`${applicant}.documents`] ? "error-field" : ""}>
         <SectionTitle icon={<FaFileSignature />} title="Upload Documents" />
         
@@ -853,29 +871,49 @@ function ApplicantForm({
           </p>
         )}
 
-        {/* Upload Field - ONE FILE AT A TIME with Loading State */}
+        {/* SINGLE FILE UPLOAD - ONE AT A TIME */}
         {!maxDocsReached ? (
           <div className="relative">
             {isUploading && (
-              <div className="absolute inset-0 bg-white/90 flex items-center justify-center z-10 rounded-lg border-2 border-dashed border-[#658C58]">
-                <div className="flex flex-col items-center gap-2 text-[#658C58]">
-                  <svg className="animate-spin h-8 w-8" viewBox="0 0 24 24">
+              <div className="absolute inset-0 bg-white/95 flex items-center justify-center z-20 rounded-lg border-2 border-[#658C58]">
+                <div className="flex flex-col items-center gap-3 text-[#658C58]">
+                  <svg className="animate-spin h-10 w-10" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
-                  <span className="font-medium text-sm">Uploading file...</span>
-                  <span className="text-xs text-gray-500">Please wait</span>
+                  <span className="font-semibold">Uploading file...</span>
+                  <span className="text-xs text-gray-500">Please wait, do not click again</span>
                 </div>
               </div>
             )}
-            <UploadField
-              disabled={isUploading}
-              onUpload={handleFileUpload}
-            />
+            
+            <label 
+              className={`flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-xl transition-all ${
+                isUploading 
+                  ? 'border-gray-300 bg-gray-100 cursor-not-allowed pointer-events-none' 
+                  : 'border-gray-300 bg-gray-50 hover:bg-[#658C58]/5 hover:border-[#658C58] cursor-pointer'
+              }`}
+            >
+              <div className="flex flex-col items-center justify-center py-6">
+                <FaCloudUploadAlt className={`w-12 h-12 mb-3 ${isUploading ? 'text-gray-400' : 'text-[#658C58]'}`} />
+                <p className="mb-1 text-sm text-gray-600">
+                  <span className="font-semibold text-[#658C58]">Click to upload ONE file</span>
+                </p>
+                <p className="text-xs text-gray-500">PDF, PNG, JPG (Max 10MB)</p>
+                <p className="text-xs text-amber-600 mt-2 font-medium">⚠️ Upload one file at a time</p>
+              </div>
+              <input 
+                type="file" 
+                className="hidden" 
+                disabled={isUploading}
+                accept=".pdf,.png,.jpg,.jpeg,.gif,.webp"
+                onChange={handleSingleFileUpload}
+              />
+            </label>
           </div>
         ) : (
           <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm">
-            Maximum 20 documents reached. Remove a document to upload more.
+            ⚠️ Maximum 20 documents reached. Remove a document to upload more.
           </div>
         )}
 
@@ -883,23 +921,25 @@ function ApplicantForm({
         {ap.documents.length > 0 && (
           <div className="mt-4">
             <p className="text-sm font-medium text-gray-700 mb-2">
-              Uploaded Documents ({ap.documents.length}/20):
+              ✅ Uploaded Documents ({ap.documents.length}/20):
             </p>
             <div className="space-y-2">
               {ap.documents.map((doc, i) => (
                 <div 
                   key={i} 
-                  className="flex items-center justify-between px-4 py-2 bg-green-50 border border-green-200 rounded-lg"
+                  className="flex items-center justify-between px-4 py-3 bg-green-50 border border-green-200 rounded-lg"
                 >
                   <span className="text-green-700 text-sm flex items-center gap-2">
-                    <FaCheckCircle className="text-green-500" />
-                    Document {i + 1}: {doc.name || `File ${i + 1}`}
+                    <FaCheckCircle className="text-green-500 flex-shrink-0" />
+                    <span className="truncate max-w-[200px] sm:max-w-xs">
+                      {doc.name || `File ${i + 1}`}
+                    </span>
                   </span>
                   <button
                     type="button"
                     onClick={() => removeDocument(i)}
                     disabled={isUploading}
-                    className="text-red-500 hover:text-red-700 p-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="text-red-500 hover:text-red-700 p-2 disabled:opacity-50 disabled:cursor-not-allowed ml-2 flex-shrink-0"
                     title="Remove document"
                   >
                     <FaTrash size={14} />
