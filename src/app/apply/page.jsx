@@ -92,7 +92,6 @@ export default function RentalApplicationForm() {
       ...prev,
       [applicant]: { ...prev[applicant], [field]: value },
     }));
-    // Clear error when field is updated
     if (errors[`${applicant}.${field}`]) {
       setErrors((prev) => {
         const newErrors = { ...prev };
@@ -181,11 +180,9 @@ export default function RentalApplicationForm() {
     setForm((prev) => ({ ...prev, vehicles: updated }));
   }
 
-  // Validate critical fields
   function validateForm() {
     const newErrors = {};
 
-    // Applicant 1 - Critical Fields (NON-SKIPPABLE)
     if (!form.applicant1.name.trim()) {
       newErrors["applicant1.name"] = "Full Name is required";
     }
@@ -202,7 +199,6 @@ export default function RentalApplicationForm() {
       newErrors["applicant1.phoneHome"] = "Home Phone is required";
     }
     
-    // Documents validation - Min 2, Max 20
     if (form.applicant1.documents.length < 2) {
       newErrors["applicant1.documents"] = "Please upload at least 2 documents (ID, proof of income, etc.)";
     }
@@ -210,7 +206,6 @@ export default function RentalApplicationForm() {
       newErrors["applicant1.documents"] = "Maximum 20 documents allowed";
     }
 
-    // Applicant 2 - If included (same critical fields)
     if (form.includeApplicant2) {
       if (!form.applicant2.name.trim()) {
         newErrors["applicant2.name"] = "Full Name is required";
@@ -228,7 +223,6 @@ export default function RentalApplicationForm() {
         newErrors["applicant2.phoneHome"] = "Home Phone is required";
       }
       
-      // Documents validation for Applicant 2
       if (form.applicant2.documents.length < 2) {
         newErrors["applicant2.documents"] = "Please upload at least 2 documents (ID, proof of income, etc.)";
       }
@@ -244,9 +238,7 @@ export default function RentalApplicationForm() {
   async function handleSubmit(e) {
     e.preventDefault();
     
-    // Validate before submit
     if (!validateForm()) {
-      // Scroll to first error
       const firstErrorField = document.querySelector('.error-field');
       if (firstErrorField) {
         firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -562,12 +554,7 @@ export default function RentalApplicationForm() {
           <div className="text-center py-6">
             <p className="text-gray-500 text-sm">
               Need help? Contact us at{" "}
-              <a
-                href="tel:+18455769038"
-                className="font-bold text-[#658C58]"
-              >
-                (845) 576-9038
-              </a>
+              <a href="tel:+18455769038" className="font-bold text-[#658C58]">(845) 576-9038</a>
             </p>
           </div>
         </form>
@@ -679,14 +666,25 @@ function ApplicantForm({
   updateReference,
 }) {
   const ap = form[applicant];
+  const [isUploading, setIsUploading] = useState(false);
   
-  // Check if max documents reached
   const maxDocsReached = ap.documents.length >= 20;
 
-  // Remove document
   const removeDocument = (index) => {
     const updatedDocs = ap.documents.filter((_, i) => i !== index);
     setApplicantField(applicant, "documents", updatedDocs);
+  };
+
+  const handleFileUpload = async (fileObj) => {
+    if (ap.documents.length >= 20 || isUploading) return;
+    
+    setIsUploading(true);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 300));
+      setApplicantField(applicant, "documents", [...ap.documents, fileObj]);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
@@ -838,11 +836,10 @@ function ApplicantForm({
         <AddButton onClick={() => addReference(applicant)} label="Add Reference" />
       </div>
 
-      {/* Document Upload - REQUIRED: Min 2, Max 20 */}
+      {/* Document Upload - ONE FILE AT A TIME */}
       <div className={errors[`${applicant}.documents`] ? "error-field" : ""}>
         <SectionTitle icon={<FaFileSignature />} title="Upload Documents" />
         
-        {/* Application Fee Payment Notice */}
         <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg mb-4">
           <p className="text-blue-800 font-semibold text-sm mb-1">Application Fee Payment</p>
           <p className="text-blue-700 text-sm">
@@ -856,15 +853,26 @@ function ApplicantForm({
           </p>
         )}
 
-        {/* Upload Field - Disabled if max reached */}
+        {/* Upload Field - ONE FILE AT A TIME with Loading State */}
         {!maxDocsReached ? (
-          <UploadField
-            onUpload={(fileObj) => {
-              if (ap.documents.length < 20) {
-                setApplicantField(applicant, "documents", [...ap.documents, fileObj]);
-              }
-            }}
-          />
+          <div className="relative">
+            {isUploading && (
+              <div className="absolute inset-0 bg-white/90 flex items-center justify-center z-10 rounded-lg border-2 border-dashed border-[#658C58]">
+                <div className="flex flex-col items-center gap-2 text-[#658C58]">
+                  <svg className="animate-spin h-8 w-8" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  <span className="font-medium text-sm">Uploading file...</span>
+                  <span className="text-xs text-gray-500">Please wait</span>
+                </div>
+              </div>
+            )}
+            <UploadField
+              disabled={isUploading}
+              onUpload={handleFileUpload}
+            />
+          </div>
         ) : (
           <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm">
             Maximum 20 documents reached. Remove a document to upload more.
@@ -874,7 +882,9 @@ function ApplicantForm({
         {/* Uploaded Documents List */}
         {ap.documents.length > 0 && (
           <div className="mt-4">
-            <p className="text-sm font-medium text-gray-700 mb-2">Uploaded Documents:</p>
+            <p className="text-sm font-medium text-gray-700 mb-2">
+              Uploaded Documents ({ap.documents.length}/20):
+            </p>
             <div className="space-y-2">
               {ap.documents.map((doc, i) => (
                 <div 
@@ -888,7 +898,8 @@ function ApplicantForm({
                   <button
                     type="button"
                     onClick={() => removeDocument(i)}
-                    className="text-red-500 hover:text-red-700 p-1"
+                    disabled={isUploading}
+                    className="text-red-500 hover:text-red-700 p-1 disabled:opacity-50 disabled:cursor-not-allowed"
                     title="Remove document"
                   >
                     <FaTrash size={14} />
