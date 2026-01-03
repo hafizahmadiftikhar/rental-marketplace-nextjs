@@ -13,6 +13,62 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+// Helper: Upload base64 to Cloudinary
+async function uploadToCloudinary(base64Data, folder, filename) {
+  try {
+    const result = await cloudinary.uploader.upload(base64Data, {
+      folder: folder,
+      public_id: filename,
+      resource_type: "auto",
+    });
+    return result.secure_url;
+  } catch (error) {
+    console.error("Cloudinary upload error:", error);
+    return null;
+  }
+}
+
+// Helper: Process documents - upload to Cloudinary and return URLs
+async function processDocuments(documents, applicantId) {
+  if (!documents || !Array.isArray(documents) || documents.length === 0) {
+    return [];
+  }
+
+  const processedDocs = [];
+  
+  for (let i = 0; i < documents.length; i++) {
+    const doc = documents[i];
+    
+    // If already a URL (not base64), keep it
+    if (doc.url && !doc.url.startsWith('data:')) {
+      processedDocs.push({
+        url: doc.url,
+        type: doc.type || 'unknown',
+        name: doc.name || `document_${i + 1}`
+      });
+      continue;
+    }
+    
+    // Upload base64 to Cloudinary
+    const base64Data = doc.url || doc.data;
+    if (base64Data && base64Data.startsWith('data:')) {
+      const timestamp = Date.now();
+      const filename = `doc_${applicantId}_${i}_${timestamp}`;
+      const uploadedUrl = await uploadToCloudinary(base64Data, 'rental_documents', filename);
+      
+      if (uploadedUrl) {
+        processedDocs.push({
+          url: uploadedUrl,
+          type: doc.type || 'unknown',
+          name: doc.name || `document_${i + 1}`
+        });
+      }
+    }
+  }
+  
+  return processedDocs;
+}
+
 export async function POST(req) {
   try {
     await connectDB();
@@ -32,10 +88,66 @@ export async function POST(req) {
       }
     }
 
-    // Clean and structure the data
+    // Generate a unique ID for this application
+    const applicationId = Date.now().toString(36) + Math.random().toString(36).substr(2);
+
+    // Process and upload documents for applicant1
+    console.log("Processing applicant1 documents...");
+    const applicant1Docs = await processDocuments(
+      data.applicant1.documents, 
+      `app1_${applicationId}`
+    );
+    console.log(`Uploaded ${applicant1Docs.length} documents for applicant1`);
+
+    // Process and upload documents for applicant2 if exists
+    let applicant2Docs = [];
+    if (data.applicant2 && data.applicant2.documents) {
+      console.log("Processing applicant2 documents...");
+      applicant2Docs = await processDocuments(
+        data.applicant2.documents, 
+        `app2_${applicationId}`
+      );
+      console.log(`Uploaded ${applicant2Docs.length} documents for applicant2`);
+    }
+
+    // Upload signature for applicant1 if exists
+    let applicant1Signature = data.applicant1.signature || { dataURL: null, signedAt: null };
+    if (applicant1Signature.dataURL && applicant1Signature.dataURL.startsWith('data:')) {
+      const sigUrl = await uploadToCloudinary(
+        applicant1Signature.dataURL, 
+        'rental_signatures', 
+        `sig1_${applicationId}`
+      );
+      if (sigUrl) {
+        applicant1Signature = { dataURL: sigUrl, signedAt: applicant1Signature.signedAt };
+      }
+    }
+
+    // Upload signature for applicant2 if exists
+    let applicant2Signature = null;
+    if (data.applicant2?.signature?.dataURL && data.applicant2.signature.dataURL.startsWith('data:')) {
+      const sigUrl = await uploadToCloudinary(
+        data.applicant2.signature.dataURL, 
+        'rental_signatures', 
+        `sig2_${applicationId}`
+      );
+      if (sigUrl) {
+        applicant2Signature = { dataURL: sigUrl, signedAt: data.applicant2.signature.signedAt };
+      }
+    }
+
+    // Clean and structure the data with uploaded URLs
     const applicationData = {
-      applicant1: cleanApplicantData(data.applicant1),
-      applicant2: data.applicant2 ? cleanApplicantData(data.applicant2) : null,
+      applicant1: {
+        ...cleanApplicantData(data.applicant1),
+        documents: applicant1Docs,
+        signature: applicant1Signature,
+      },
+      applicant2: data.applicant2 ? {
+        ...cleanApplicantData(data.applicant2),
+        documents: applicant2Docs,
+        signature: applicant2Signature || data.applicant2.signature,
+      } : null,
       otherOccupants: data.otherOccupants || [],
       pets: data.pets || "",
       waterFurniture: data.waterFurniture || "",
@@ -46,10 +158,14 @@ export async function POST(req) {
     };
 
     // Save application to MongoDB
+    console.log("Saving to MongoDB...");
     const created = await RentalApplication.create(applicationData);
+    console.log("Application saved with ID:", created._id);
 
     // Generate PDF
+    console.log("Generating PDF...");
     const pdfBytes = await createApplicationPDF(created);
+    console.log("PDF generated, size:", pdfBytes.length);
 
     // Upload PDF to Cloudinary
     const uploadResult = await new Promise((resolve, reject) => {
@@ -71,6 +187,7 @@ export async function POST(req) {
     // Save PDF URL to MongoDB
     created.pdfURL = uploadResult.secure_url;
     await created.save();
+    console.log("PDF uploaded to:", uploadResult.secure_url);
 
     // Return PDF as attachment for download
     return new NextResponse(pdfBytes, {
@@ -86,16 +203,21 @@ export async function POST(req) {
   }
 }
 
-// Helper function to clean applicant data
+// Helper function to clean applicant data (remove base64 from documents)
 function cleanApplicantData(applicant) {
   return {
-    ...applicant,
-    personalReferences: applicant.personalReferences || [],
-    documents: applicant.documents || [],
+    name: applicant.name || "",
+    ssn: applicant.ssn || "",
+    dlNumber: applicant.dlNumber || "",
+    dateOfBirth: applicant.dateOfBirth || null,
+    phoneHome: applicant.phoneHome || "",
+    phoneWork: applicant.phoneWork || "",
+    email: applicant.email || "",
     employment: applicant.employment || {},
     rentalHistory: applicant.rentalHistory || {},
     banking: applicant.banking || {},
-    signature: applicant.signature || { dataURL: null, signedAt: null }
+    personalReferences: applicant.personalReferences || [],
+    // documents and signature are handled separately
   };
 }
 
@@ -157,6 +279,16 @@ async function createApplicationPDF(doc) {
     ];
     lines.forEach(line => drawLine(line));
     
+    // Documents uploaded
+    if (app.documents?.length > 0) {
+      y -= 6;
+      drawLine(`Documents Uploaded: ${app.documents.length} file(s)`, { font: fontBold });
+      app.documents.forEach((doc, index) => {
+        const docName = doc.name || `Document ${index + 1}`;
+        drawLine(`${index + 1}. ${docName}`, { indent: 8 });
+      });
+    }
+    
     // Personal References
     if (app.personalReferences?.length > 0) {
       y -= 6;
@@ -204,33 +336,21 @@ async function createApplicationPDF(doc) {
   additionalInfo.forEach(info => drawLine(info, { indent: 8 }));
   y -= 20;
 
-  // Signatures
-  const drawSignature = async (sigData, label) => {
-    if (sigData?.dataURL) {
-      try {
-        const sigBase64 = sigData.dataURL.split(",")[1];
-        const sigBytes = Buffer.from(sigBase64, "base64");
-        const sigImage = await pdfDoc.embedPng(sigBytes);
-        
-        drawLine(`${label}:`, { font: fontBold });
-        page.drawImage(sigImage, { 
-          x: margin + 150, 
-          y: y - 30, 
-          width: 120, 
-          height: 40 
-        });
-        y -= 60;
-      } catch (e) {
-        console.warn(`Signature embed error for ${label}:`, e);
-        drawLine(`${label}: [Signature image failed to load]`, { font: fontBold });
-        y -= 20;
-      }
+  // Signature indication (not embedding image from URL)
+  if (doc.applicant1?.signature?.dataURL) {
+    drawLine("Applicant 1 Signature: [SIGNED ELECTRONICALLY]", { font: fontBold });
+    if (doc.applicant1.signature.signedAt) {
+      drawLine(`Signed at: ${new Date(doc.applicant1.signature.signedAt).toLocaleString()}`, { indent: 8 });
     }
-  };
-
-  await drawSignature(doc.applicant1?.signature, "Applicant 1 Signature");
-  if (doc.applicant2) {
-    await drawSignature(doc.applicant2?.signature, "Applicant 2 Signature");
+    y -= 10;
+  }
+  
+  if (doc.applicant2?.signature?.dataURL) {
+    drawLine("Applicant 2 Signature: [SIGNED ELECTRONICALLY]", { font: fontBold });
+    if (doc.applicant2.signature.signedAt) {
+      drawLine(`Signed at: ${new Date(doc.applicant2.signature.signedAt).toLocaleString()}`, { indent: 8 });
+    }
+    y -= 10;
   }
 
   // Footer

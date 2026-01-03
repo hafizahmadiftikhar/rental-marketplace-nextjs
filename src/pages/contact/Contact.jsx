@@ -92,7 +92,7 @@ export default function Contact() {
       icon: FaWhatsapp,
       title: "WhatsApp",
       value: "(646) 745-4567",
-      href: "https://wa.me/16467454567",
+      href: "https://wa.me/16467454567?text=Hi!%20I%27m%20interested%20in%20renting%20a%20property.%20Can%20you%20please%20help%20me%20with%20available%20listings%3F",
       subtitle: "Fast Response",
       color: "from-green-500 to-green-600",
     },
@@ -197,7 +197,7 @@ export default function Contact() {
                 
                 {/* WhatsApp Button - BIGGEST */}
                 <a
-                  href="https://wa.me/16467454567"
+                  href="https://wa.me/16467454567?text=Hi!%20I%27m%20interested%20in%20renting%20a%20property.%20Can%20you%20please%20help%20me%20with%20available%20listings%3F"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block w-full p-6 bg-gradient-to-r from-[#25D366] to-[#128C7E] hover:from-[#128C7E] hover:to-[#25D366] rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 group"

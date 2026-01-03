@@ -30,7 +30,6 @@ export default function RentalApplicationForm() {
     applicant1: emptyApplicant(),
     applicant2: emptyApplicant(),
     includeApplicant2: false,
-    // Collapsible section toggles - all FALSE by default (hidden)
     showAdditionalInfo: false,
     otherOccupants: [],
     vehicles: [],
@@ -98,18 +97,37 @@ export default function RentalApplicationForm() {
     };
   }
 
+  // Helper function to migrate old document structure (data -> url)
+  function migrateDocuments(docs) {
+    if (!docs || !Array.isArray(docs)) return [];
+    return docs.map(doc => ({
+      url: doc.url || doc.data || '',
+      type: doc.type || '',
+      name: doc.name || ''
+    })).filter(doc => doc.url);
+  }
+
   // ================== AUTO-SAVE: Load from localStorage on mount ==================
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        // Merge with default structure to handle any missing fields
+        
+        // Merge with default structure and migrate documents
         setForm(prev => ({
           ...prev,
           ...parsed,
-          applicant1: { ...emptyApplicant(), ...parsed.applicant1 },
-          applicant2: { ...emptyApplicant(), ...parsed.applicant2 },
+          applicant1: { 
+            ...emptyApplicant(), 
+            ...parsed.applicant1,
+            documents: migrateDocuments(parsed.applicant1?.documents)
+          },
+          applicant2: { 
+            ...emptyApplicant(), 
+            ...parsed.applicant2,
+            documents: migrateDocuments(parsed.applicant2?.documents)
+          },
         }));
         setLastSaved("Loaded from saved data");
       }
@@ -121,15 +139,15 @@ export default function RentalApplicationForm() {
 
   // ================== AUTO-SAVE: Save to localStorage on form change ==================
   useEffect(() => {
-    if (!isLoaded) return; // Don't save until initial load complete
+    if (!isLoaded) return;
     
     const timer = setTimeout(() => {
       try {
-        // Don't save signature data to localStorage (too large)
+        // Don't save documents and signature to localStorage (too large)
         const formToSave = {
           ...form,
-          applicant1: { ...form.applicant1, signature: { dataURL: null, signedAt: null } },
-          applicant2: { ...form.applicant2, signature: { dataURL: null, signedAt: null } },
+          applicant1: { ...form.applicant1, signature: { dataURL: null, signedAt: null }, documents: [] },
+          applicant2: { ...form.applicant2, signature: { dataURL: null, signedAt: null }, documents: [] },
         };
         localStorage.setItem(STORAGE_KEY, JSON.stringify(formToSave));
         setLastSaved(new Date().toLocaleTimeString());
@@ -169,7 +187,6 @@ export default function RentalApplicationForm() {
       ...prev,
       [applicant]: { ...prev[applicant], [field]: value },
     }));
-    // Clear error when user types
     if (errors[`${applicant}.${field}`]) {
       setErrors((prev) => {
         const newErrors = { ...prev };
@@ -261,7 +278,6 @@ export default function RentalApplicationForm() {
   function validateForm() {
     const newErrors = {};
 
-    // Applicant 1 - Personal Info (always required)
     if (!form.applicant1.name.trim()) {
       newErrors["applicant1.name"] = "Full Name is required";
     }
@@ -281,12 +297,10 @@ export default function RentalApplicationForm() {
       newErrors["applicant1.email"] = "Email is required";
     }
     
-    // Documents
     if (form.applicant1.documents.length < 2) {
       newErrors["applicant1.documents"] = "Please upload at least 2 documents";
     }
 
-    // Applicant 2 validation (if enabled)
     if (form.includeApplicant2) {
       if (!form.applicant2.name.trim()) {
         newErrors["applicant2.name"] = "Full Name is required";
@@ -317,7 +331,6 @@ export default function RentalApplicationForm() {
     setSubmitAttempted(true);
     
     if (!validateForm()) {
-      // Scroll to first error
       setTimeout(() => {
         const firstError = document.querySelector('.error-field');
         if (firstError) {
@@ -329,9 +342,24 @@ export default function RentalApplicationForm() {
 
     setSubmitting(true);
     try {
+      // Clean up documents - ensure url field exists
+      const cleanDocuments = (docs) => {
+        return docs.map(doc => ({
+          url: doc.url || doc.data || '',
+          type: doc.type || '',
+          name: doc.name || ''
+        })).filter(doc => doc.url);
+      };
+
       const payload = {
-        applicant1: form.applicant1,
-        applicant2: form.includeApplicant2 ? form.applicant2 : null,
+        applicant1: {
+          ...form.applicant1,
+          documents: cleanDocuments(form.applicant1.documents)
+        },
+        applicant2: form.includeApplicant2 ? {
+          ...form.applicant2,
+          documents: cleanDocuments(form.applicant2.documents)
+        } : null,
         otherOccupants: form.otherOccupants,
         vehicles: form.vehicles,
         pets: form.pets,
@@ -351,7 +379,6 @@ export default function RentalApplicationForm() {
         const err = await res.json();
         alert("Error: " + err.error);
       } else {
-        // Download PDF
         const blob = await res.blob();
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
@@ -359,10 +386,7 @@ export default function RentalApplicationForm() {
         a.download = "rental-application.pdf";
         a.click();
         
-        // Show success message
         setShowSuccess(true);
-        
-        // Clear localStorage after successful submission
         localStorage.removeItem(STORAGE_KEY);
       }
     } catch (e) {
@@ -373,7 +397,6 @@ export default function RentalApplicationForm() {
     }
   }
 
-  // Success Modal
   if (showSuccess) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
@@ -883,7 +906,6 @@ function ApplicantForm({
   
   const maxDocsReached = ap.documents.length >= 20;
 
-  // Toggle functions for collapsible sections within applicant
   const toggleSection = (section) => {
     setApplicantField(applicant, section, !ap[section]);
   };
@@ -909,7 +931,7 @@ function ApplicantForm({
       setTimeout(() => {
         setApplicantField(applicant, "documents", [
           ...ap.documents, 
-          { name: file.name, data: base64, type: file.type }
+          { url: base64, type: file.type, name: file.name }
         ]);
         setIsUploading(false);
       }, 500);
