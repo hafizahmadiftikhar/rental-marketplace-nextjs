@@ -49,7 +49,7 @@ const FloatingActionButton = () => {
       ),
       onClick: () =>
         window.open(
-          "https://wa.me/16467454567?text=Hi!%20I%27m%20interested%20in%20renting%20a%20property.%20Can%20you%20please%20help%20me%20with%20available%20listings%3F",
+          "https://wa.me/16467454567?text=Rivo%20Rent%20Website%20:",
           "_blank"
         ),
     },
