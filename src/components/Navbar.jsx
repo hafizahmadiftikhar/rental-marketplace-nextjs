@@ -174,7 +174,7 @@ export default function Navbar() {
 
             {/* Mobile Contact */}
             <a
-              href="tel:+8455769038"
+              href="tel:+18455769038"
               className="flex items-center justify-center gap-2 w-full border border-[#658C58] text-[#658C58] px-4 py-3 rounded-xl text-sm font-semibold mt-2"
             >
               <FaPhone className="text-xs" />
