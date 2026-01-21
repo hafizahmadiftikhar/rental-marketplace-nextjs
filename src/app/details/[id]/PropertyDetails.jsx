@@ -269,7 +269,7 @@ export default function PropertyDetails() {
                       : `$${property.rentMin} - $${property.rentMax}`
                     : property.rentMin ? `$${property.rentMin}`
                     : property.rentMax ? `$${property.rentMax}`
-                    : "Contact"
+                    : "$600 - $750"
                 }
               />
               <InfoBox title="Bedrooms" value={`${property.beds || "N/A"}`} icon="🛏️" />
@@ -433,7 +433,11 @@ export default function PropertyDetails() {
                       ? property.rentMin === property.rentMax
                         ? `$${property.rentMin}`
                         : `$${property.rentMin} - $${property.rentMax}`
-                      : "Contact for Price"}
+                      : property.rentMin
+                      ? `$${property.rentMin}`
+                      : property.rentMax
+                      ? `$${property.rentMax}`
+                      : "$600 - $750"}
                   </p>
                   <p className="text-gray-500 text-sm">per month</p>
                 </div>

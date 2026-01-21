@@ -361,7 +361,7 @@ export default function SearchPageClient() {
                         </div>
                         <div className="absolute top-3 right-3">
                           <span className="px-3 py-1 bg-white/95 text-[#658C58] text-sm font-bold rounded-full shadow">
-                            {property.rentMin ? `$${property.rentMin}` : "Call"}
+                            {property.rentMin ? `$${property.rentMin}` : "$600-$750"}
                           </span>
                         </div>
                       </div>
@@ -385,7 +385,7 @@ export default function SearchPageClient() {
                             ? `$${property.rentMin} - $${property.rentMax}`
                             : property.rentMin
                             ? `From $${property.rentMin}`
-                            : "Contact for Price"}
+                            : "$600 - $750"}
                           <span className="text-gray-400 font-normal text-sm"> /month</span>
                         </p>
 
