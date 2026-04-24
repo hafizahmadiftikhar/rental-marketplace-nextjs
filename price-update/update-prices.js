@@ -1,28 +1,31 @@
 /**
- * MongoDB Price Update Script
- * 
- * Yeh script CSV file se rentMin aur rentMax prices MongoDB mein update karega
- * 
+ * Bulk Price Update from CSV
+ *
+ * Reads a CSV file with `_id`, `rentMin`, `rentMax` columns and
+ * applies the new prices to each matching property document.
+ *
  * Usage:
- * 1. npm install mongodb csv-parser
- * 2. Connection string update karo neeche
- * 3. node update-prices.js
+ *   1. npm install
+ *   2. Set MONGODB_URI in a .env file at the project root (see .env.example)
+ *   3. Place your CSV next to this script (default: missing.csv)
+ *   4. node update-prices.js
  */
 
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
 const { MongoClient, ObjectId } = require('mongodb');
 const fs = require('fs');
 const csv = require('csv-parser');
 
 // ============== CONFIGURATION ==============
-// 👇 Apna MongoDB connection string yahan daal
-const MONGODB_URI = 'mongodb+srv://abdullahsana691_db_user:abdullahsana691@cluster0.cqsas.mongodb.net/haha';
-
-// 👇 Collection name (jahan properties stored hain)
-const COLLECTION_NAME = 'properties';
-
-// 👇 CSV file path
-const CSV_FILE = './missing.csv';
+const MONGODB_URI = process.env.MONGODB_URI;
+const COLLECTION_NAME = process.env.PROPERTIES_COLLECTION || 'properties';
+const CSV_FILE = process.env.CSV_FILE || './missing.csv';
 // ============================================
+
+if (!MONGODB_URI) {
+  console.error('❌ MONGODB_URI is not set. Add it to your .env file.');
+  process.exit(1);
+}
 
 async function updatePrices() {
   const client = new MongoClient(MONGODB_URI);

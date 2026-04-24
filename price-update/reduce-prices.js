@@ -1,28 +1,26 @@
 /**
- * Reduce All Property Prices by 20%
- * 
- * Yeh script saari properties ki rentMin aur rentMax 20% kam karega
- * 
- * Formula: newPrice = oldPrice * 0.80
- * 
+ * Reduce All Property Prices by a Fixed Percentage
+ *
+ * Formula: newPrice = oldPrice * MULTIPLIER (default 0.80 = 20% off)
+ *
  * Usage:
- * 1. Connection string update karo
- * 2. node reduce-prices.js
+ *   1. Set MONGODB_URI in a .env file at the project root (see .env.example)
+ *   2. node reduce-prices.js
  */
 
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
 const { MongoClient } = require('mongodb');
 
 // ============== CONFIGURATION ==============
-// 👇 Apna MongoDB connection string yahan daal
-const MONGODB_URI = 'mongodb+srv://abdullahsana691_db_user:abdullahsana691@cluster0.cqsas.mongodb.net/haha';
-
-
-// 👇 Collection name
-const COLLECTION_NAME = 'properties';
-
-// 👇 Discount percentage (20% off = multiply by 0.80)
-const MULTIPLIER = 0.80;
+const MONGODB_URI = process.env.MONGODB_URI;
+const COLLECTION_NAME = process.env.PROPERTIES_COLLECTION || 'properties';
+const MULTIPLIER = Number(process.env.PRICE_MULTIPLIER || 0.80);
 // ============================================
+
+if (!MONGODB_URI) {
+  console.error('❌ MONGODB_URI is not set. Add it to your .env file.');
+  process.exit(1);
+}
 
 async function reducePrices() {
   const client = new MongoClient(MONGODB_URI);

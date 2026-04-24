@@ -1,30 +1,29 @@
 /**
- * Property URLs Generator for Facebook Bot
- * 
- * Yeh script MongoDB se saari property IDs nikaal ke URLs generate karega
- * 
+ * Property URLs Generator
+ *
+ * Reads every property document from MongoDB and writes the canonical
+ * detail-page URLs to a text file (used by external indexing / sharing tools).
+ *
  * Usage:
- * 1. Connection string update karo
- * 2. node generate-urls.js
- * 3. property-urls.txt file generate ho jayegi
+ *   1. Set MONGODB_URI in a .env file at the project root (see .env.example)
+ *   2. node generate-urls.js
  */
 
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
 const { MongoClient } = require('mongodb');
 const fs = require('fs');
 
 // ============== CONFIGURATION ==============
-// 👇 Apna MongoDB connection string yahan daal
-const MONGODB_URI = 'mongodb+srv://abdullahsana691_db_user:abdullahsana691@cluster0.cqsas.mongodb.net/haha';
-
-// 👇 Collection name
-const COLLECTION_NAME = 'properties';
-
-// 👇 Domain URL
-const BASE_URL = 'https://rivo.rent/details/';
-
-// 👇 Output file name
+const MONGODB_URI = process.env.MONGODB_URI;
+const COLLECTION_NAME = process.env.PROPERTIES_COLLECTION || 'properties';
+const BASE_URL = process.env.PROPERTY_BASE_URL || 'https://rivo.rent/details/';
 const OUTPUT_FILE = 'property-urls.txt';
 // ============================================
+
+if (!MONGODB_URI) {
+  console.error('❌ MONGODB_URI is not set. Add it to your .env file.');
+  process.exit(1);
+}
 
 async function generateUrls() {
   const client = new MongoClient(MONGODB_URI);
